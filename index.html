@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Radius Academy - High School English</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@300;400;600;700&display=swap');
+        
+        body {
+            font-family: 'Hind Siliguri', sans-serif;
+            background-color: #f0f4f8;
+            scroll-behavior: smooth;
+        }
+
+        .hero-gradient {
+            background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 50%, #60a5fa 100%);
+        }
+
+        .section-gradient {
+            background: linear-gradient(180deg, #ffffff 0%, #e0f2fe 100%);
+        }
+
+        /* Accordion transition logic */
+        .accordion-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        .accordion-item.active .accordion-content {
+            max-height: 1000px;
+        }
+
+        .accordion-item.active .chevron-icon {
+            transform: rotate(180deg);
+        }
+
+        .chevron-icon {
+            transition: transform 0.3s ease;
+        }
+
+        .card-pop:hover {
+            transform: scale(1.02);
+            transition: transform 0.3s ease;
+        }
+
+        /* Team Image Styling */
+        .team-img {
+            width: 120px;
+            height: 120px;
+            object-fit: cover;
+            border: 4px solid #fff;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="text-gray-800">
+
+    <!-- Navigation -->
+    <nav class="bg-white/90 backdrop-blur-md shadow-lg sticky top-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between h-20 items-center">
+                <div class="flex items-center">
+                    <div class="bg-blue-600 p-2 rounded-lg mr-3 shadow-blue-200 shadow-lg">
+                        <i class="fas fa-graduation-cap text-white text-xl"></i>
+                    </div>
+                    <span class="text-3xl font-extrabold tracking-tight text-blue-900">Radius <span class="text-blue-500">Academy</span></span>
+                </div>
+                <div class="hidden md:block">
+                    <div class="ml-10 flex items-baseline space-x-8">
+                        <a href="#" class="text-blue-600 px-3 py-2 font-bold border-b-2 border-blue-600">Home</a>
+                        <a href="#about-section" class="text-gray-600 hover:text-blue-600 px-3 py-2 transition font-medium">About Us</a>
+                        <a href="#contact-section" class="bg-blue-600 text-white px-6 py-2 rounded-full hover:bg-blue-700 transition shadow-md font-bold">Contact</a>
+                    </div>
+                </div>
+                <div class="md:hidden">
+                    <button class="text-gray-600 focus:outline-none">
+                        <i class="fas fa-bars text-2xl"></i>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <header class="hero-gradient text-white py-24 px-4 text-center relative overflow-hidden">
+        <div class="absolute top-0 left-0 w-full h-full opacity-10">
+            <i class="fas fa-book absolute text-9xl -top-10 -left-10 rotate-12"></i>
+            <i class="fas fa-pen-fancy absolute text-9xl bottom-10 right-10 -rotate-12"></i>
+        </div>
+        <div class="max-w-4xl mx-auto relative z-10">
+            <span class="bg-blue-400/30 text-blue-100 py-1 px-4 rounded-full text-sm font-bold uppercase tracking-widest mb-4 inline-block">Learn English Smartly</span>
+            <h1 class="text-5xl md:text-6xl font-black mb-6 drop-shadow-md">Radius Academy-তে স্বাগতম</h1>
+            <p class="text-xl md:text-2xl opacity-90 mb-10 font-light leading-relaxed">হাইস্কুলের ইংরেজি রাইটিং পার্ট এবং গ্রামার শেখার আধুনিক ও সহজ ডিজিটাল প্ল্যাটফর্ম।</p>
+            <a href="#writing-section" class="bg-yellow-400 hover:bg-yellow-300 text-blue-900 font-black text-lg py-4 px-10 rounded-2xl transition duration-300 inline-block shadow-xl transform hover:-translate-y-1">
+                সিলেবাস দেখুন <i class="fas fa-arrow-right ml-2 text-sm"></i>
+            </a>
+        </div>
+    </header>
+
+    <!-- Writing Part Section -->
+    <main class="max-w-5xl mx-auto px-4 py-20">
+        
+        <div id="writing-section" class="mb-24">
+            <div class="text-center mb-12">
+                <h2 class="text-4xl font-black text-gray-900 inline-block relative">
+                    English Writing Syllabus
+                    <span class="block h-1.5 bg-blue-500 w-1/2 mx-auto mt-2 rounded-full"></span>
+                </h2>
+                <p class="mt-4 text-gray-500">নিচের ক্যাটাগরিগুলোতে ক্লিক করে বিস্তারিত দেখুন</p>
+            </div>
+
+            <div class="grid gap-5">
+                
+                <!-- Category Template (Reusable) -->
+                <!-- 1. Paragraph Writing -->
+                <div class="accordion-item bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden card-pop">
+                    <button onclick="toggleAccordion(this)" class="w-full flex items-center justify-between p-6 text-left hover:bg-blue-50/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mr-4">
+                                <i class="fas fa-paragraph text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800">Paragraph Writing</span>
+                        </div>
+                        <i class="fas fa-chevron-down chevron-icon text-blue-400 text-xl"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-6 bg-gradient-to-b from-blue-50/30 to-white border-t border-gray-50">
+                            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-blue-100 text-gray-700 transition"><i class="fas fa-file-alt mr-3 text-blue-400"></i> A Rainy Day</a></li>
+                                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-blue-100 text-gray-700 transition"><i class="fas fa-file-alt mr-3 text-blue-400"></i> Your School Library</a></li>
+                                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-blue-100 text-blue-400 italic font-medium"><i class="fas fa-plus-circle mr-3"></i> Add New Link</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 2. Letters & Applications -->
+                <div class="accordion-item bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden card-pop">
+                    <button onclick="toggleAccordion(this)" class="w-full flex items-center justify-between p-6 text-left hover:bg-blue-50/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-indigo-100 rounded-xl flex items-center justify-center text-indigo-600 mr-4">
+                                <i class="fas fa-envelope-open-text text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800">Letters & Applications</span>
+                        </div>
+                        <i class="fas fa-chevron-down chevron-icon text-indigo-400 text-xl"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-6 bg-gradient-to-b from-indigo-50/30 to-white border-t border-gray-50">
+                            <ul class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <li><a href="#" class="flex items-center p-3 rounded-lg hover:bg-indigo-100 text-gray-700 transition"><i class="fas fa-file-signature mr-3 text-indigo-400"></i> Leave of Absence</a></li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 3. Dialogue Writing -->
+                <div class="accordion-item bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden card-pop">
+                    <button onclick="toggleAccordion(this)" class="w-full flex items-center justify-between p-6 text-left hover:bg-blue-50/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-emerald-100 rounded-xl flex items-center justify-center text-emerald-600 mr-4">
+                                <i class="fas fa-comments text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800">Dialogue Writing</span>
+                        </div>
+                        <i class="fas fa-chevron-down chevron-icon text-emerald-400 text-xl"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-6 bg-gradient-to-b from-emerald-50/30 to-white border-t border-gray-50">
+                            <p class="text-gray-400 italic">নতুন লিংক এখানে যুক্ত করুন...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 4. Story Writing -->
+                <div class="accordion-item bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden card-pop">
+                    <button onclick="toggleAccordion(this)" class="w-full flex items-center justify-between p-6 text-left hover:bg-blue-50/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-amber-100 rounded-xl flex items-center justify-center text-amber-600 mr-4">
+                                <i class="fas fa-book-open text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800">Story Writing</span>
+                        </div>
+                        <i class="fas fa-chevron-down chevron-icon text-amber-400 text-xl"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-6 bg-gradient-to-b from-amber-50/30 to-white border-t border-gray-50">
+                            <p class="text-gray-400 italic">নতুন লিংক এখানে যুক্ত করুন...</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 5. Compositions -->
+                <div class="accordion-item bg-white rounded-2xl shadow-md border border-gray-100 overflow-hidden card-pop">
+                    <button onclick="toggleAccordion(this)" class="w-full flex items-center justify-between p-6 text-left hover:bg-blue-50/50 transition">
+                        <div class="flex items-center">
+                            <div class="w-12 h-12 bg-rose-100 rounded-xl flex items-center justify-center text-rose-600 mr-4">
+                                <i class="fas fa-edit text-xl"></i>
+                            </div>
+                            <span class="text-2xl font-bold text-gray-800">Compositions</span>
+                        </div>
+                        <i class="fas fa-chevron-down chevron-icon text-rose-400 text-xl"></i>
+                    </button>
+                    <div class="accordion-content">
+                        <div class="p-6 bg-gradient-to-b from-rose-50/30 to-white border-t border-gray-50">
+                            <p class="text-gray-400 italic">নতুন লিংক এখানে যুক্ত করুন...</p>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- About Us Section with Team Template -->
+        <section id="about-section" class="py-16 bg-white rounded-3xl p-10 shadow-xl shadow-blue-100/50 mb-24 border border-blue-50 relative overflow-hidden">
+            <div class="absolute top-0 right-0 w-32 h-32 bg-blue-50 rounded-full -mr-16 -mt-16"></div>
+            <div class="relative z-10">
+                <div class="text-center mb-12">
+                    <h2 class="text-3xl font-black text-blue-900 mb-4">About Us</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto leading-relaxed">
+                        Radius Academy একটি অনলাইন প্ল্যাটফর্ম যা হাইস্কুলের শিক্ষার্থীদের ইংরেজি রাইটিং এবং গ্রামার শেখার সহজ সমাধান প্রদান করে। আমাদের সাথে আছেন একদল দক্ষ শিক্ষক এবং মেন্টর।
+                    </p>
+                </div>
+
+                <!-- Team Members Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 mt-12">
+                    
+                    <!-- Member 1 -->
+                    <div class="text-center group">
+                        <div class="relative inline-block mb-4">
+                            <img src="https://via.placeholder.com/150" alt="Team Member" class="team-img rounded-full transition group-hover:scale-105 group-hover:border-blue-400">
+                            <div class="absolute bottom-1 right-1 w-6 h-6 bg-green-500 border-2 border-white rounded-full"></div>
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">ব্যক্তির নাম</h3>
+                        <p class="text-blue-600 text-sm font-medium">পদবী / বিষয়</p>
+                    </div>
+
+                    <!-- Member 2 -->
+                    <div class="text-center group">
+                        <div class="relative inline-block mb-4">
+                            <img src="https://via.placeholder.com/150" alt="Team Member" class="team-img rounded-full transition group-hover:scale-105 group-hover:border-blue-400">
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">ব্যক্তির নাম</h3>
+                        <p class="text-blue-600 text-sm font-medium">পদবী / বিষয়</p>
+                    </div>
+
+                    <!-- Member 3 -->
+                    <div class="text-center group">
+                        <div class="relative inline-block mb-4">
+                            <img src="https://via.placeholder.com/150" alt="Team Member" class="team-img rounded-full transition group-hover:scale-105 group-hover:border-blue-400">
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">ব্যক্তির নাম</h3>
+                        <p class="text-blue-600 text-sm font-medium">পদবী / বিষয়</p>
+                    </div>
+
+                    <!-- Member 4 -->
+                    <div class="text-center group">
+                        <div class="relative inline-block mb-4">
+                            <img src="https://via.placeholder.com/150" alt="Team Member" class="team-img rounded-full transition group-hover:scale-105 group-hover:border-blue-400">
+                        </div>
+                        <h3 class="font-bold text-lg text-gray-900">ব্যক্তির নাম</h3>
+                        <p class="text-blue-600 text-sm font-medium">পদবী / বিষয়</p>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Contact Section -->
+        <section id="contact-section" class="py-16 text-center bg-gradient-to-r from-blue-600 to-indigo-700 rounded-3xl p-10 text-white shadow-2xl">
+            <h2 class="text-3xl font-black mb-4">আমাদের সাথে যুক্ত হোন</h2>
+            <p class="text-blue-100 mb-10 opacity-80">যেকোনো প্রশ্ন বা সহযোগিতার জন্য আমাদের সোশ্যাল মিডিয়ায় নক দিন</p>
+            
+            <div class="flex flex-wrap justify-center gap-5">
+                <a href="#" class="flex items-center bg-white text-blue-700 px-8 py-4 rounded-2xl hover:bg-yellow-400 hover:text-blue-900 transition-all shadow-lg font-bold group">
+                    <i class="fab fa-facebook text-2xl mr-3 group-hover:scale-110 transition"></i> Facebook
+                </a>
+                <a href="#" class="flex items-center bg-white text-red-600 px-8 py-4 rounded-2xl hover:bg-yellow-400 hover:text-red-900 transition-all shadow-lg font-bold group">
+                    <i class="fab fa-youtube text-2xl mr-3 group-hover:scale-110 transition"></i> YouTube
+                </a>
+                <a href="mailto:info@radiusacademy.com" class="flex items-center bg-gray-900 text-white px-8 py-4 rounded-2xl hover:bg-yellow-400 hover:text-gray-900 transition-all shadow-lg font-bold group border border-white/20">
+                    <i class="fas fa-envelope text-2xl mr-3 group-hover:scale-110 transition"></i> Email Us
+                </a>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="bg-gray-900 text-white py-16">
+        <div class="max-w-7xl mx-auto px-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left border-b border-gray-800 pb-12 mb-12">
+                <div>
+                    <p class="text-3xl font-black mb-4">Radius <span class="text-blue-500">Academy</span></p>
+                    <p class="text-gray-400 leading-relaxed italic">ইংরেজি শেখার এক নতুন জগত। আমরা বিশ্বাস করি প্রতিটি শিক্ষার্থীই মেধাবী, শুধু প্রয়োজন সঠিক দিকনির্দেশনা।</p>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-6 uppercase tracking-widest text-blue-400">Quick Links</h4>
+                    <ul class="space-y-3 text-gray-400">
+                        <li><a href="#" class="hover:text-white transition">Privacy Policy</a></li>
+                        <li><a href="#" class="hover:text-white transition">Terms of Service</a></li>
+                        <li><a href="#about-section" class="hover:text-white transition">Our Teachers</a></li>
+                    </ul>
+                </div>
+                <div>
+                    <h4 class="text-lg font-bold mb-6 uppercase tracking-widest text-blue-400">Newsletter</h4>
+                    <div class="flex">
+                        <input type="email" placeholder="আপনার ইমেইল" class="bg-gray-800 border-none rounded-l-lg px-4 py-3 w-full focus:ring-2 focus:ring-blue-500">
+                        <button class="bg-blue-600 px-4 py-3 rounded-r-lg hover:bg-blue-700 transition"><i class="fas fa-paper-plane"></i></button>
+                    </div>
+                </div>
+            </div>
+            <div class="text-center">
+                <p class="text-gray-500 text-sm">&copy; 2024 Radius Academy. Design with <i class="fas fa-heart text-red-500 mx-1"></i> for Students.</p>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        function toggleAccordion(element) {
+            const item = element.parentElement;
+            const isActive = item.classList.contains('active');
+            
+            // Close all items
+            document.querySelectorAll('.accordion-item').forEach(otherItem => {
+                otherItem.classList.remove('active');
+            });
+
+            // If it wasn't active, open it
+            if (!isActive) {
+                item.classList.add('active');
+            }
+        }
+    </script>
+
+</body>
+</html>
