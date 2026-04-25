@@ -7,7 +7,7 @@
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700;900&family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
@@ -21,49 +21,55 @@
         .phrase-segment {
             transition: all 0.2s ease;
             cursor: pointer;
-            padding: 2px 4px;
+            padding: 2px 6px;
             border-radius: 4px;
             display: inline-block;
+            font-weight: 700; /* Increased thickness for English font */
+            color: #1e293b;
         }
+        /* Enhanced Highlight Effect */
         .phrase-segment:hover {
-            background-color: #fef3c7;
-            color: #b45309;
+            background-color: #4f46e5; /* Deep Indigo color */
+            color: #ffffff; /* White text for contrast */
+            transform: translateY(-2px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
         /* Tooltip Style */
         .tooltip {
             position: absolute;
-            background: #1e293b;
+            background: #1e1b4b; /* Darker navy */
             color: white;
-            padding: 4px 12px;
-            border-radius: 6px;
-            font-size: 1.25rem;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 1.4rem;
             font-weight: bold;
-            z-index: 50;
+            z-index: 100;
             pointer-events: none;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
-            transform: translateY(-100%);
+            box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.3);
+            transform: translateY(-110%);
             white-space: nowrap;
         }
         .tooltip::after {
             content: '';
             position: absolute;
-            bottom: -6px;
+            bottom: -8px;
             left: 50%;
             transform: translateX(-50%);
-            border-width: 6px 6px 0;
+            border-width: 8px 8px 0;
             border-style: solid;
-            border-color: #1e293b transparent transparent;
+            border-color: #1e1b4b transparent transparent;
         }
         .sentence-container {
-            margin-bottom: 1.5rem;
-            line-height: 2;
+            margin-bottom: 2rem;
+            line-height: 2.2;
         }
         .translation-box {
             display: none;
-            background-color: #f1f5f9;
-            border-left: 4px solid #3b82f6;
-            padding: 1rem;
-            margin-top: 0.5rem;
+            background-color: #eff6ff;
+            border-left: 6px solid #2563eb;
+            padding: 1.25rem;
+            margin-top: 0.75rem;
+            box-shadow: inset 0 2px 4px 0 rgba(0, 0, 0, 0.05);
             animation: slideDown 0.3s ease-out forwards;
         }
         @keyframes slideDown {
@@ -71,32 +77,36 @@
             to { opacity: 1; transform: translateY(0); }
         }
         .icon-btn {
-            transition: transform 0.2s;
+            transition: all 0.2s;
             display: inline-flex;
             align-items: center;
             justify-content: center;
             vertical-align: middle;
-            margin-right: 8px;
-            color: #64748b;
+            margin-right: 12px;
+            color: #475569;
+            background: #f1f5f9;
+            padding: 6px;
+            border-radius: 50%;
         }
         .icon-btn:hover {
             transform: scale(1.2);
-            color: #3b82f6;
+            color: #2563eb;
+            background: #dbeafe;
         }
     </style>
 </head>
 <body class="p-4 md:p-8">
 
-    <div class="max-w-[99%] mx-auto bg-white shadow-sm border border-stone-200 rounded-lg overflow-hidden">
+    <div class="max-w-[99%] mx-auto bg-white shadow-xl border border-stone-200 rounded-xl overflow-hidden">
         <!-- Header -->
-        <header class="bg-stone-800 text-white p-6 text-center">
-            <h1 class="text-3xl md:text-4xl font-bold mb-2">A Newspaper (সংবাদপত্র)</h1>
-            <p class="text-stone-300 italic">Explore the text phrase-by-phrase with audio and translation.</p>
+        <header class="bg-indigo-900 text-white p-8 text-center">
+            <h1 class="text-3xl md:text-5xl font-black mb-3">A Newspaper (সংবাদপত্র)</h1>
+            <p class="text-indigo-200 italic text-lg">প্রতিটি শব্দ বা বাক্যাংশে ক্লিক করে উচ্চারণ ও অনুবাদ শিখুন।</p>
         </header>
 
         <!-- Content Area -->
-        <main id="story-content" class="p-6 md:p-12 text-lg md:text-2xl text-stone-800 leading-relaxed">
-            <!-- Content will be injected here by JavaScript -->
+        <main id="story-content" class="p-6 md:p-16 text-xl md:text-3xl text-slate-900 leading-relaxed">
+            <!-- Content injected by JS -->
         </main>
     </div>
 
@@ -412,7 +422,7 @@
         function speak(text, slow = true) {
             window.speechSynthesis.cancel();
             const utterance = new SpeechSynthesisUtterance(text);
-            utterance.rate = slow ? 0.75 : 0.9;
+            utterance.rate = slow ? 0.65 : 0.8; // Slightly slower for better clarity
             utterance.lang = 'en-US';
             window.speechSynthesis.speak(utterance);
         }
@@ -421,8 +431,10 @@
             tooltip.textContent = text;
             tooltip.classList.remove('hidden');
             const rect = e.target.getBoundingClientRect();
-            tooltip.style.left = `${rect.left + (rect.width / 2) - (tooltip.offsetWidth / 2)}px`;
-            tooltip.style.top = `${rect.top + window.scrollY - 10}px`;
+            // Positioning tooltip center above the element
+            const center = rect.left + (rect.width / 2);
+            tooltip.style.left = `${center - (tooltip.offsetWidth / 2)}px`;
+            tooltip.style.top = `${rect.top + window.scrollY - 12}px`;
         }
 
         function hideTooltip() {
@@ -431,30 +443,23 @@
 
         function toggleTranslation(id) {
             const el = document.getElementById(`trans-${id}`);
-            if (el.style.display === 'block') {
-                el.style.display = 'none';
-            } else {
-                el.style.display = 'block';
-            }
+            el.style.display = (el.style.display === 'block') ? 'none' : 'block';
         }
 
-        // Build the UI
+        // Build UI
         storyData.forEach((item, index) => {
             const sentenceDiv = document.createElement('div');
             sentenceDiv.className = 'sentence-container';
 
-            // Speaker Icon (Start)
+            // Speak Button
             const speakBtn = document.createElement('button');
             speakBtn.className = 'icon-btn';
-            speakBtn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" />
-                </svg>
-            `;
+            speakBtn.title = "বাক্যটি শুনুন";
+            speakBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M15.536 8.464a5 5 0 010 7.072m2.828-9.9a9 9 0 010 12.728M5.586 15H4a1 1 0 01-1-1v-4a1 1 0 011-1h1.586l4.707-4.707C10.923 3.663 12 4.109 12 5v14c0 .891-1.077 1.337-1.707.707L5.586 15z" /></svg>`;
             speakBtn.onclick = () => speak(item.englishSentence, true);
             sentenceDiv.appendChild(speakBtn);
 
-            // Phrases
+            // Phrase Segments
             item.phrases.forEach(phrase => {
                 const span = document.createElement('span');
                 span.className = 'phrase-segment';
@@ -462,28 +467,23 @@
                 
                 span.onmouseover = (e) => showTooltip(e, phrase.bn);
                 span.onmouseout = hideTooltip;
-                span.onclick = () => {
-                    speak(phrase.en, true);
-                };
+                span.onclick = () => speak(phrase.en, true);
 
                 sentenceDiv.appendChild(span);
             });
 
-            // Translation Icon (End)
+            // Translation Toggle Button
             const transBtn = document.createElement('button');
             transBtn.className = 'icon-btn ml-2';
-            transBtn.innerHTML = `
-                <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" />
-                </svg>
-            `;
+            transBtn.title = "বঙ্গানুবাদ দেখুন";
+            transBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="22" height="22" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M3 5h12M9 3v2m1.048 9.5A18.022 18.022 0 016.412 9m6.088 9h7M11 21l5-10 5 10M12.751 5C11.783 10.77 8.07 15.61 3 18.129" /></svg>`;
             transBtn.onclick = () => toggleTranslation(index);
             sentenceDiv.appendChild(transBtn);
 
-            // Bengali Translation Box
+            // Translation Box
             const transBox = document.createElement('div');
             transBox.id = `trans-${index}`;
-            transBox.className = 'translation-box bengali-font text-2xl font-bold';
+            transBox.className = 'translation-box bengali-font text-2xl md:text-3xl font-bold text-blue-900';
             transBox.textContent = item.bengaliSentence;
             sentenceDiv.appendChild(transBox);
 
