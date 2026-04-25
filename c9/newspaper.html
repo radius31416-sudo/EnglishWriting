@@ -1,1 +1,769 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>Newspapers – Interactive Lesson</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Lato:wght@600;700;900&family=Noto+Serif+Bengali:wght@600;700&display=swap" rel="stylesheet"/>
+<style>
+  :root {
+    --paper: #fdfbf7;
+    --ink: #1a1a2e;
+    --accent: #b5451b;
+    --accent-light: #f5e6df;
+    --gold: #c9932a;
+    --rule: #d4c9b0;
+    --hover-bg: #fff3cd;
+    --tooltip-bg: #1a1a2e;
+  }
 
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background-color: var(--paper);
+    font-family: 'Lato', sans-serif;
+    color: var(--ink);
+    min-height: 100vh;
+  }
+
+  /* Subtle paper texture overlay */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(0deg, transparent, transparent 27px, rgba(180,165,130,0.08) 28px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* ── HEADER ── */
+  .site-header {
+    background: var(--ink);
+    color: #fdfbf7;
+    padding: 0;
+    position: relative;
+    overflow: hidden;
+  }
+  .site-header::after {
+    content: '';
+    display: block;
+    height: 4px;
+    background: linear-gradient(90deg, var(--accent), var(--gold), var(--accent));
+  }
+  .header-inner {
+    max-width: 99%;
+    margin: 0 auto;
+    padding: 20px 24px 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .header-eyebrow {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--gold);
+    opacity: 0.9;
+  }
+  .header-title {
+    font-size: clamp(22px, 4vw, 42px);
+    font-weight: 900;
+    letter-spacing: -0.01em;
+    line-height: 1.1;
+    color: #fdfbf7;
+  }
+  .header-subtitle {
+    font-size: 13px;
+    font-weight: 600;
+    color: rgba(253,251,247,0.55);
+    margin-top: 2px;
+    letter-spacing: 0.04em;
+  }
+  .header-rule {
+    border: none;
+    border-top: 1px solid rgba(253,251,247,0.12);
+    margin: 12px 0 0;
+  }
+  .header-meta {
+    display: flex;
+    gap: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    color: rgba(253,251,247,0.45);
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+  }
+
+  /* ── LEGEND ── */
+  .legend-bar {
+    max-width: 99%;
+    margin: 14px auto 0;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px 22px;
+    padding: 0 4px;
+    font-size: 12px;
+    font-weight: 700;
+    color: #555;
+  }
+  .legend-item { display: flex; align-items: center; gap: 6px; }
+  .legend-dot {
+    width: 10px; height: 10px; border-radius: 50%;
+    flex-shrink: 0;
+  }
+
+  /* ── MAIN CONTAINER ── */
+  .lesson-wrap {
+    max-width: 99%;
+    margin: 18px auto 60px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* ── PARAGRAPH BLOCK ── */
+  .para-block {
+    background: #fff;
+    border: 1px solid var(--rule);
+    border-radius: 4px;
+    margin-bottom: 18px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+    overflow: hidden;
+  }
+  .para-block-inner {
+    padding: 18px 22px 16px;
+  }
+
+  /* ── SENTENCE ROW ── */
+  .sentence-row {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .sentence-row:last-child { margin-bottom: 0; }
+
+  .sentence-body {
+    flex: 1;
+    line-height: 1.85;
+  }
+
+  /* ── ICON BUTTONS ── */
+  .icon-btn {
+    flex-shrink: 0;
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    border: none;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+    transition: background 0.18s, transform 0.12s;
+    margin-top: 3px;
+  }
+  .icon-btn:hover { transform: scale(1.15); }
+  .icon-btn:active { transform: scale(0.95); }
+
+  .btn-speaker {
+    background: #eef4fb;
+    color: #2563eb;
+  }
+  .btn-speaker:hover { background: #dbeafe; }
+  .btn-speaker.playing { background: #2563eb; color: #fff; animation: pulse-ring 1s infinite; }
+
+  .btn-translate {
+    background: #f0fdf4;
+    color: #16a34a;
+  }
+  .btn-translate:hover { background: #dcfce7; }
+  .btn-translate.active { background: #16a34a; color: #fff; }
+
+  @keyframes pulse-ring {
+    0% { box-shadow: 0 0 0 0 rgba(37,99,235,0.4); }
+    70% { box-shadow: 0 0 0 7px rgba(37,99,235,0); }
+    100% { box-shadow: 0 0 0 0 rgba(37,99,235,0); }
+  }
+
+  /* ── PHRASE CHIPS ── */
+  .phrase {
+    display: inline;
+    position: relative;
+    cursor: pointer;
+    font-weight: 700;
+    font-size: clamp(20px, 2.4vw, 26px);
+    border-radius: 3px;
+    padding: 1px 2px;
+    transition: background 0.15s;
+    line-height: inherit;
+  }
+  .phrase:hover {
+    background: var(--hover-bg);
+  }
+  .phrase.playing-phrase {
+    background: #fef9c3;
+    outline: 2px solid var(--gold);
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip {
+    position: absolute;
+    bottom: calc(100% + 6px);
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    background: var(--tooltip-bg);
+    color: #fdfbf7;
+    padding: 6px 11px;
+    border-radius: 6px;
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: 13px;
+    font-weight: 600;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.18s, transform 0.18s;
+    z-index: 100;
+    box-shadow: 0 4px 14px rgba(0,0,0,0.22);
+  }
+  .tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%; left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--tooltip-bg);
+  }
+  .phrase:hover .tooltip,
+  .phrase.show-tooltip .tooltip {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
+  }
+
+  /* ── BENGALI TRANSLATION SLIDE ── */
+  .bn-translation {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.38s ease, opacity 0.3s;
+    opacity: 0;
+  }
+  .bn-translation.open {
+    max-height: 200px;
+    opacity: 1;
+  }
+  .bn-translation-inner {
+    margin-top: 6px;
+    margin-left: 36px;
+    padding: 10px 14px;
+    background: #f0fdf4;
+    border-left: 3px solid #16a34a;
+    border-radius: 0 4px 4px 0;
+    font-family: 'Noto Serif Bengali', serif;
+    font-size: clamp(14px, 1.8vw, 17px);
+    font-weight: 600;
+    color: #14532d;
+    line-height: 1.8;
+  }
+
+  /* ── PARAGRAPH HEADER ── */
+  .para-header {
+    background: #f5f0e8;
+    border-bottom: 1px solid var(--rule);
+    padding: 7px 22px;
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: #8a7a60;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .para-header-num {
+    width: 18px; height: 18px;
+    background: var(--accent);
+    color: #fff;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 9px;
+    font-weight: 900;
+  }
+
+  /* Scrollbar */
+  ::-webkit-scrollbar { width: 6px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: #c9b99a; border-radius: 3px; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+  <div class="header-inner">
+    <div class="header-eyebrow">📰 Interactive English Lesson</div>
+    <h1 class="header-title">Newspapers</h1>
+    <div class="header-subtitle">The Role of Newspaper in Modern Life &nbsp;·&nbsp; Importance of Reading Newspaper</div>
+    <hr class="header-rule"/>
+    <div class="header-meta">
+      <span>🖱️ Hover phrase → see Bengali</span>
+      <span>🔊 Click phrase → hear pronunciation</span>
+      <span>▶ Speaker icon → full sentence audio</span>
+      <span>🌐 Globe icon → Bengali translation</span>
+    </div>
+  </div>
+</header>
+
+<!-- LEGEND -->
+<div class="legend-bar">
+  <div class="legend-item"><div class="legend-dot" style="background:#2563eb"></div> Speaker = Full Sentence Audio</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#16a34a"></div> Globe = Bengali Translation Slide</div>
+  <div class="legend-item"><div class="legend-dot" style="background:#d97706"></div> Click Phrase = Word/Phrase Audio + Bengali Tooltip</div>
+</div>
+
+<!-- LESSON CONTENT -->
+<main class="lesson-wrap" id="lessonRoot"></main>
+
+<script>
+// ══════════════════════════════════════════════════
+//  DATA
+// ══════════════════════════════════════════════════
+const storyData = [
+  {
+    paraLabel: "Paragraph 1 · Definition",
+    sentences: [
+      {
+        en: "A newspaper is a paper that gives us news of day-to-day happenings of the different parts of the world.",
+        bn: "একটি সংবাদপত্র হলো এমন একটি কাগজ যা আমাদেরকে বিশ্বের বিভিন্ন অংশের প্রতিদিনকার ঘটনাবলির সংবাদ দেয়।",
+        phrases: [
+          { en: "A newspaper is a paper", bn: "একটি সংবাদপত্র হলো একটি কাগজ" },
+          { en: "that gives us news", bn: "যা আমাদেরকে সংবাদ দেয়" },
+          { en: "of day-to-day happenings", bn: "প্রতিদিনকার ঘটনাবলির" },
+          { en: "of the different parts of the world", bn: "বিশ্বের বিভিন্ন অংশের" }
+        ]
+      },
+      {
+        en: "It is one of the blessings of modern civilization.",
+        bn: "এটি আধুনিক সভ্যতার একটি আশীর্বাদ।",
+        phrases: [
+          { en: "It is one of the blessings", bn: "এটি একটি আশীর্বাদ" },
+          { en: "of modern civilization", bn: "আধুনিক সভ্যতার" }
+        ]
+      },
+      {
+        en: "We cannot think of modern life without the newspaper.",
+        bn: "আমরা সংবাদপত্র ছাড়া আধুনিক জীবন কল্পনা করতে পারি না।",
+        phrases: [
+          { en: "We cannot think", bn: "আমরা কল্পনা করতে পারি না" },
+          { en: "of modern life", bn: "আধুনিক জীবনের" },
+          { en: "without the newspaper", bn: "সংবাদপত্র ছাড়া" }
+        ]
+      }
+    ]
+  },
+  {
+    paraLabel: "Paragraph 2 · History",
+    sentences: [
+      {
+        en: "The first newspaper was published in China.",
+        bn: "প্রথম সংবাদপত্র চীনে প্রকাশিত হয়েছিল।",
+        phrases: [
+          { en: "The first newspaper", bn: "প্রথম সংবাদপত্র" },
+          { en: "was published in China", bn: "চীনে প্রকাশিত হয়েছিল" }
+        ]
+      },
+      {
+        en: "Venice of Italy was the first place where the first newspaper saw the light of the day in Europe.",
+        bn: "ইতালির ভেনিস ছিল ইউরোপে প্রথম সংবাদপত্র প্রকাশের স্থান।",
+        phrases: [
+          { en: "Venice of Italy", bn: "ইতালির ভেনিস" },
+          { en: "was the first place", bn: "ছিল প্রথম স্থান" },
+          { en: "where the first newspaper", bn: "যেখানে প্রথম সংবাদপত্র" },
+          { en: "saw the light of the day in Europe", bn: "ইউরোপে প্রথম আলোর মুখ দেখে" }
+        ]
+      },
+      {
+        en: "During the reign of Elizabeth, it was published in England.",
+        bn: "রানী এলিজাবেথের শাসনামলে এটি ইংল্যান্ডে প্রকাশিত হয়।",
+        phrases: [
+          { en: "During the reign of Elizabeth", bn: "রানী এলিজাবেথের শাসনামলে" },
+          { en: "it was published in England", bn: "এটি ইংল্যান্ডে প্রকাশিত হয়" }
+        ]
+      },
+      {
+        en: "The \"Indian Gazette\" published in 1774 was the first newspaper in the sub-continent.",
+        bn: "১৭৭৪ সালে প্রকাশিত \"ইন্ডিয়ান গেজেট\" ছিল উপমহাদেশের প্রথম সংবাদপত্র।",
+        phrases: [
+          { en: "The Indian Gazette", bn: "ইন্ডিয়ান গেজেট" },
+          { en: "published in 1774", bn: "১৭৭৪ সালে প্রকাশিত" },
+          { en: "was the first newspaper", bn: "ছিল প্রথম সংবাদপত্র" },
+          { en: "in the sub-continent", bn: "উপমহাদেশে" }
+        ]
+      },
+      {
+        en: "The \"Samachar Darpan\" brought out by the Missionaries of Sree Rampur was the first Bengali newspaper.",
+        bn: "শ্রীরামপুরের মিশনারিদের দ্বারা প্রকাশিত \"সমাচার দর্পণ\" ছিল প্রথম বাংলা সংবাদপত্র।",
+        phrases: [
+          { en: "The Samachar Darpan", bn: "সমাচার দর্পণ" },
+          { en: "brought out by the Missionaries", bn: "মিশনারিদের দ্বারা প্রকাশিত" },
+          { en: "of Sree Rampur", bn: "শ্রীরামপুরের" },
+          { en: "was the first Bengali newspaper", bn: "ছিল প্রথম বাংলা সংবাদপত্র" }
+        ]
+      }
+    ]
+  },
+  {
+    paraLabel: "Paragraph 3 · Types",
+    sentences: [
+      {
+        en: "There are various kinds of newspapers in the world.",
+        bn: "পৃথিবীতে বিভিন্ন ধরনের সংবাদপত্র রয়েছে।",
+        phrases: [
+          { en: "There are various kinds", bn: "বিভিন্ন ধরন রয়েছে" },
+          { en: "of newspapers in the world", bn: "পৃথিবীতে সংবাদপত্রের" }
+        ]
+      },
+      {
+        en: "They are dailies, weeklies, monthlies, fortnightlies, and so on.",
+        bn: "এগুলো হলো দৈনিক, সাপ্তাহিক, মাসিক, পাক্ষিক ইত্যাদি।",
+        phrases: [
+          { en: "They are dailies", bn: "এগুলো হলো দৈনিক" },
+          { en: "weeklies, monthlies", bn: "সাপ্তাহিক, মাসিক" },
+          { en: "fortnightlies, and so on", bn: "পাক্ষিক ইত্যাদি" }
+        ]
+      },
+      {
+        en: "The daily newspaper carries the news of the daily affairs.",
+        bn: "দৈনিক সংবাদপত্র প্রতিদিনকার বিষয়াবলির সংবাদ বহন করে।",
+        phrases: [
+          { en: "The daily newspaper", bn: "দৈনিক সংবাদপত্র" },
+          { en: "carries the news", bn: "সংবাদ বহন করে" },
+          { en: "of the daily affairs", bn: "প্রতিদিনকার বিষয়াবলির" }
+        ]
+      },
+      {
+        en: "It is popular with all sections of people.",
+        bn: "এটি সমাজের সকল শ্রেণির মানুষের কাছে জনপ্রিয়।",
+        phrases: [
+          { en: "It is popular", bn: "এটি জনপ্রিয়" },
+          { en: "with all sections of people", bn: "সমাজের সকল শ্রেণির মানুষের কাছে" }
+        ]
+      },
+      {
+        en: "Other kinds of newspapers are known as periodicals and magazines.",
+        bn: "অন্যান্য ধরনের সংবাদপত্র পত্রিকা ও ম্যাগাজিন নামে পরিচিত।",
+        phrases: [
+          { en: "Other kinds of newspapers", bn: "অন্যান্য ধরনের সংবাদপত্র" },
+          { en: "are known as periodicals", bn: "পত্রিকা নামে পরিচিত" },
+          { en: "and magazines", bn: "ও ম্যাগাজিন" }
+        ]
+      },
+      {
+        en: "They contain articles, stories, literatures, poems, and some other items.",
+        bn: "এগুলোতে প্রবন্ধ, গল্প, সাহিত্য, কবিতা এবং অন্যান্য বিষয় থাকে।",
+        phrases: [
+          { en: "They contain articles, stories", bn: "এগুলোতে প্রবন্ধ, গল্প থাকে" },
+          { en: "literatures, poems", bn: "সাহিত্য, কবিতা" },
+          { en: "and some other items", bn: "এবং অন্যান্য বিষয়" }
+        ]
+      }
+    ]
+  },
+  {
+    paraLabel: "Paragraph 4 · Importance",
+    sentences: [
+      {
+        en: "Newspapers are very useful to all sections of people.",
+        bn: "সংবাদপত্র সমাজের সকল শ্রেণির মানুষের জন্য অত্যন্ত উপকারী।",
+        phrases: [
+          { en: "Newspapers are very useful", bn: "সংবাদপত্র অত্যন্ত উপকারী" },
+          { en: "to all sections of people", bn: "সমাজের সকল শ্রেণির মানুষের জন্য" }
+        ]
+      },
+      {
+        en: "It tells us what is happening at home and abroad.",
+        bn: "এটি আমাদের দেশে ও বিদেশে কী ঘটছে তা জানায়।",
+        phrases: [
+          { en: "It tells us", bn: "এটি আমাদের জানায়" },
+          { en: "what is happening", bn: "কী ঘটছে" },
+          { en: "at home and abroad", bn: "দেশে ও বিদেশে" }
+        ]
+      },
+      {
+        en: "It is said that the newspaper is a storehouse of knowledge.",
+        bn: "বলা হয় যে সংবাদপত্র হলো জ্ঞানের ভাণ্ডার।",
+        phrases: [
+          { en: "It is said that", bn: "বলা হয় যে" },
+          { en: "the newspaper is a storehouse", bn: "সংবাদপত্র হলো ভাণ্ডার" },
+          { en: "of knowledge", bn: "জ্ঞানের" }
+        ]
+      },
+      {
+        en: "It familiarizes the students with the world outside.",
+        bn: "এটি শিক্ষার্থীদের বাইরের জগতের সাথে পরিচয় করিয়ে দেয়।",
+        phrases: [
+          { en: "It familiarizes the students", bn: "এটি শিক্ষার্থীদের পরিচয় করিয়ে দেয়" },
+          { en: "with the world outside", bn: "বাইরের জগতের সাথে" }
+        ]
+      },
+      {
+        en: "Merchants read the newspaper to know the condition of the market, lovers of sports go through them to get the sports news, and politicians come to know the political news of the world.",
+        bn: "ব্যবসায়ীরা বাজারের অবস্থা জানতে সংবাদপত্র পড়েন, ক্রীড়াপ্রেমীরা খেলাধুলার সংবাদ পেতে পড়েন, এবং রাজনীতিবিদরা বিশ্বের রাজনৈতিক সংবাদ জানতে পড়েন।",
+        phrases: [
+          { en: "Merchants read the newspaper", bn: "ব্যবসায়ীরা সংবাদপত্র পড়েন" },
+          { en: "to know the condition of the market", bn: "বাজারের অবস্থা জানতে" },
+          { en: "lovers of sports go through them", bn: "ক্রীড়াপ্রেমীরা পড়েন" },
+          { en: "to get the sports news", bn: "খেলাধুলার সংবাদ পেতে" },
+          { en: "and politicians come to know", bn: "এবং রাজনীতিবিদরা জানতে পড়েন" },
+          { en: "the political news of the world", bn: "বিশ্বের রাজনৈতিক সংবাদ" }
+        ]
+      },
+      {
+        en: "The employment seekers get useful information in it.",
+        bn: "চাকরিপ্রার্থীরা এতে দরকারী তথ্য পান।",
+        phrases: [
+          { en: "The employment seekers", bn: "চাকরিপ্রার্থীরা" },
+          { en: "get useful information", bn: "দরকারী তথ্য পান" },
+          { en: "in it", bn: "এতে" }
+        ]
+      },
+      {
+        en: "It is for all these reasons newspapers are a great concern to all.",
+        bn: "এই সব কারণেই সংবাদপত্র সকলের কাছে অত্যন্ত গুরুত্বপূর্ণ।",
+        phrases: [
+          { en: "It is for all these reasons", bn: "এই সব কারণেই" },
+          { en: "newspapers are a great concern", bn: "সংবাদপত্র অত্যন্ত গুরুত্বপূর্ণ" },
+          { en: "to all", bn: "সকলের কাছে" }
+        ]
+      }
+    ]
+  },
+  {
+    paraLabel: "Paragraph 5 · Drawbacks",
+    sentences: [
+      {
+        en: "Newspapers lead the people and nation in the right way.",
+        bn: "সংবাদপত্র মানুষ ও জাতিকে সঠিক পথে পরিচালিত করে।",
+        phrases: [
+          { en: "Newspapers lead the people", bn: "সংবাদপত্র মানুষকে পরিচালিত করে" },
+          { en: "and nation in the right way", bn: "এবং জাতিকে সঠিক পথে" }
+        ]
+      },
+      {
+        en: "But this is often ignored.",
+        bn: "কিন্তু এটি প্রায়ই উপেক্ষা করা হয়।",
+        phrases: [
+          { en: "But this is often ignored", bn: "কিন্তু এটি প্রায়ই উপেক্ষা করা হয়" }
+        ]
+      },
+      {
+        en: "As the newspapers are owned by different political parties, they provide news and express views in their own way.",
+        bn: "যেহেতু সংবাদপত্রগুলো বিভিন্ন রাজনৈতিক দলের মালিকানাধীন, তাই তারা নিজেদের মতো করে সংবাদ পরিবেশন করে এবং মতামত প্রকাশ করে।",
+        phrases: [
+          { en: "As the newspapers are owned", bn: "যেহেতু সংবাদপত্রগুলো মালিকানাধীন" },
+          { en: "by different political parties", bn: "বিভিন্ন রাজনৈতিক দলের" },
+          { en: "they provide news", bn: "তারা সংবাদ পরিবেশন করে" },
+          { en: "and express views in their own way", bn: "এবং নিজেদের মতো মতামত প্রকাশ করে" }
+        ]
+      },
+      {
+        en: "Really speaking, newspapers sometimes suppress the truth and spread lies.",
+        bn: "সত্যি বলতে, সংবাদপত্র কখনো কখনো সত্য গোপন করে এবং মিথ্যা ছড়ায়।",
+        phrases: [
+          { en: "Really speaking", bn: "সত্যি বলতে" },
+          { en: "newspapers sometimes suppress the truth", bn: "সংবাদপত্র কখনো সত্য গোপন করে" },
+          { en: "and spread lies", bn: "এবং মিথ্যা ছড়ায়" }
+        ]
+      },
+      {
+        en: "Hence, a newspaper is not always an unmixed blessing.",
+        bn: "তাই, সংবাদপত্র সবসময় নিছক আশীর্বাদ নয়।",
+        phrases: [
+          { en: "Hence, a newspaper", bn: "তাই, একটি সংবাদপত্র" },
+          { en: "is not always", bn: "সবসময় নয়" },
+          { en: "an unmixed blessing", bn: "নিছক আশীর্বাদ" }
+        ]
+      },
+      {
+        en: "Napoleon said, \"Four hostile newspapers are more to be feared than a thousand bayonets.\"",
+        bn: "নেপোলিয়ন বলেছিলেন, \"চারটি বৈরী সংবাদপত্র হাজারটি বেয়নেটের চেয়ে বেশি ভয়ংকর।\"",
+        phrases: [
+          { en: "Napoleon said", bn: "নেপোলিয়ন বলেছিলেন" },
+          { en: "Four hostile newspapers", bn: "চারটি বৈরী সংবাদপত্র" },
+          { en: "are more to be feared", bn: "বেশি ভয়ংকর" },
+          { en: "than a thousand bayonets", bn: "হাজারটি বেয়নেটের চেয়ে" }
+        ]
+      }
+    ]
+  },
+  {
+    paraLabel: "Paragraph 6 · Conclusion",
+    sentences: [
+      {
+        en: "In spite of its drawbacks, newspapers are the most useful thing in modern life.",
+        bn: "ত্রুটিগুলো সত্ত্বেও, সংবাদপত্র আধুনিক জীবনের সবচেয়ে উপকারী জিনিস।",
+        phrases: [
+          { en: "In spite of its drawbacks", bn: "ত্রুটিগুলো সত্ত্বেও" },
+          { en: "newspapers are the most useful thing", bn: "সংবাদপত্র সবচেয়ে উপকারী জিনিস" },
+          { en: "in modern life", bn: "আধুনিক জীবনে" }
+        ]
+      },
+      {
+        en: "We cannot think of a day without it.",
+        bn: "আমরা এটি ছাড়া একটি দিনও কল্পনা করতে পারি না।",
+        phrases: [
+          { en: "We cannot think of a day", bn: "আমরা একটি দিনও কল্পনা করতে পারি না" },
+          { en: "without it", bn: "এটি ছাড়া" }
+        ]
+      },
+      {
+        en: "If we do not read it, we shall be like the frogs in a dark well.",
+        bn: "যদি আমরা এটি না পড়ি, আমরা অন্ধকূপের ব্যাঙের মতো হয়ে যাব।",
+        phrases: [
+          { en: "If we do not read it", bn: "যদি আমরা এটি না পড়ি" },
+          { en: "we shall be like the frogs", bn: "আমরা ব্যাঙের মতো হব" },
+          { en: "in a dark well", bn: "অন্ধকূপের" }
+        ]
+      },
+      {
+        en: "It is a looking glass of the modern world.",
+        bn: "এটি আধুনিক বিশ্বের দর্পণ।",
+        phrases: [
+          { en: "It is a looking glass", bn: "এটি একটি দর্পণ" },
+          { en: "of the modern world", bn: "আধুনিক বিশ্বের" }
+        ]
+      },
+      {
+        en: "So, all of us should read it regularly.",
+        bn: "তাই, আমাদের সকলের উচিত নিয়মিত এটি পড়া।",
+        phrases: [
+          { en: "So, all of us", bn: "তাই, আমাদের সকলের" },
+          { en: "should read it", bn: "উচিত এটি পড়া" },
+          { en: "regularly", bn: "নিয়মিত" }
+        ]
+      }
+    ]
+  }
+];
+
+// ══════════════════════════════════════════════════
+//  SPEECH SYNTHESIS HELPERS
+// ══════════════════════════════════════════════════
+let currentUtterance = null;
+
+function speak(text, rate = 0.78, onEnd = null) {
+  if (!window.speechSynthesis) return;
+  window.speechSynthesis.cancel();
+  const utt = new SpeechSynthesisUtterance(text);
+  utt.lang = 'en-US';
+  utt.rate = rate;
+  utt.pitch = 1;
+  if (onEnd) utt.onend = onEnd;
+  currentUtterance = utt;
+  window.speechSynthesis.speak(utt);
+}
+
+// ══════════════════════════════════════════════════
+//  RENDER
+// ══════════════════════════════════════════════════
+const root = document.getElementById('lessonRoot');
+
+storyData.forEach((para, pIdx) => {
+  const block = document.createElement('div');
+  block.className = 'para-block';
+
+  // Paragraph header
+  const hdr = document.createElement('div');
+  hdr.className = 'para-header';
+  hdr.innerHTML = `<span class="para-header-num">${pIdx + 1}</span>${para.paraLabel}`;
+  block.appendChild(hdr);
+
+  const inner = document.createElement('div');
+  inner.className = 'para-block-inner';
+
+  para.sentences.forEach((sent, sIdx) => {
+    const sentId = `p${pIdx}s${sIdx}`;
+
+    // Row wrapper
+    const row = document.createElement('div');
+    row.className = 'sentence-row';
+
+    // ── Speaker button
+    const speakerBtn = document.createElement('button');
+    speakerBtn.className = 'icon-btn btn-speaker';
+    speakerBtn.title = 'Listen to full sentence';
+    speakerBtn.innerHTML = '🔊';
+    speakerBtn.addEventListener('click', () => {
+      speakerBtn.classList.add('playing');
+      speak(sent.en, 0.76, () => speakerBtn.classList.remove('playing'));
+    });
+    row.appendChild(speakerBtn);
+
+    // ── Sentence body
+    const body = document.createElement('div');
+    body.className = 'sentence-body';
+
+    // Build phrases
+    sent.phrases.forEach((ph, phIdx) => {
+      const span = document.createElement('span');
+      span.className = 'phrase';
+      span.setAttribute('tabindex', '0');
+
+      // Tooltip
+      const tip = document.createElement('span');
+      tip.className = 'tooltip';
+      tip.textContent = ph.bn;
+      span.appendChild(tip);
+
+      // Text node (after tooltip for z-order)
+      const txt = document.createTextNode(ph.en);
+      span.appendChild(txt);
+
+      // Click → audio
+      span.addEventListener('click', () => {
+        // remove old playing
+        document.querySelectorAll('.phrase.playing-phrase').forEach(el => el.classList.remove('playing-phrase'));
+        span.classList.add('playing-phrase');
+        speak(ph.en, 0.72, () => span.classList.remove('playing-phrase'));
+      });
+
+      body.appendChild(span);
+
+      // Add space between phrases (not after last)
+      if (phIdx < sent.phrases.length - 1) {
+        body.appendChild(document.createTextNode(' '));
+      }
+    });
+
+    // Bengali translation div (hidden)
+    const bnDiv = document.createElement('div');
+    bnDiv.className = 'bn-translation';
+    bnDiv.id = `bn-${sentId}`;
+    const bnInner = document.createElement('div');
+    bnInner.className = 'bn-translation-inner';
+    bnInner.textContent = sent.bn;
+    bnDiv.appendChild(bnInner);
+    body.appendChild(bnDiv);
+
+    row.appendChild(body);
+
+    // ── Globe / translate button
+    const transBtn = document.createElement('button');
+    transBtn.className = 'icon-btn btn-translate';
+    transBtn.title = 'Show Bengali translation';
+    transBtn.innerHTML = '🌐';
+    transBtn.addEventListener('click', () => {
+      const isOpen = bnDiv.classList.contains('open');
+      bnDiv.classList.toggle('open', !isOpen);
+      transBtn.classList.toggle('active', !isOpen);
+      transBtn.title = isOpen ? 'Show Bengali translation' : 'Hide Bengali translation';
+    });
+    row.appendChild(transBtn);
+
+    inner.appendChild(row);
+  });
+
+  block.appendChild(inner);
+  root.appendChild(block);
+});
+</script>
+</body>
+</html>
