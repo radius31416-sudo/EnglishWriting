@@ -1,1 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Who is to Bell the Cat - Interactive Lesson</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fdfbf7;
+            font-family: 'Lato', sans-serif;
+            color: #1a1a1a;
+        }
+        .bengali-font {
+            font-family: 'Noto Serif Bengali', serif;
+        }
+        .phrase-segment {
+            transition: all 0.2s ease;
+            cursor: pointer;
+            border-bottom: 2px dashed transparent;
+            padding: 2px 4px;
+        }
+        .phrase-segment:hover {
+            background-color: #fef3c7;
+            border-bottom: 2px dashed #d97706;
+            border-radius: 6px;
+        }
+        .tooltip {
+            position: absolute;
+            bottom: 110%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1e293b;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            font-size: 1.5rem; /* Larger tooltip font */
+            font-weight: bold;
+            white-space: nowrap;
+            z-index: 50;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -6px;
+            border-width: 6px;
+            border-style: solid;
+            border-color: #1e293b transparent transparent transparent;
+        }
+        .phrase-container:hover .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        .translation-box {
+            display: none;
+            overflow: hidden;
+        }
+        .translation-active {
+            display: block;
+            animation: slideDown 0.3s ease-out forwards;
+        }
+        @keyframes slideDown {
+            from { opacity: 0; transform: translateY(-5px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .icon-btn {
+            transition: transform 0.2s;
+            flex-shrink: 0;
+        }
+        .icon-btn:hover {
+            transform: scale(1.15);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-10">
 
+    <div class="max-w-[99%] mx-auto bg-white shadow-2xl rounded-3xl overflow-hidden border border-orange-100">
+        <!-- Header -->
+        <header class="bg-gradient-to-r from-orange-100 via-orange-50 to-orange-100 p-8 border-b border-orange-200">
+            <h1 class="text-4xl md:text-5xl font-extrabold text-orange-900 text-center uppercase tracking-tight">Who is to Bell the Cat</h1>
+            <div class="mt-4 flex flex-col items-center gap-1">
+                <p class="text-lg md:text-xl text-orange-700 font-medium italic">Click phrases for meaning & listen to audio</p>
+                <p class="text-sm text-orange-600 font-bold opacity-80">— Created by Azizul Haque —</p>
+            </div>
+        </header>
+
+        <!-- Main Content Area -->
+        <div id="content" class="p-8 md:p-16 space-y-12">
+            <!-- Content will be injected here by JS -->
+        </div>
+    </div>
+
+    <script>
+        const storyData = [
+            {
+                english: [
+                    { segment: "There was", bn: "সেখানে ছিল" },
+                    { segment: "an old house", bn: "একটি পুরনো বাড়ি" },
+                    { segment: "in a village.", bn: "একটি গ্রামে।" }
+                ],
+                fullBn: "একটি গ্রামে একটি পুরনো বাড়ি ছিল।"
+            },
+            {
+                english: [
+                    { segment: "A number of Mice", bn: "বেশ কিছু ইঁদুর" },
+                    { segment: "lived", bn: "বাস করত" },
+                    { segment: "in the house.", bn: "ঐ বাড়িতে।" }
+                ],
+                fullBn: "ঐ বাড়িতে বেশ কিছু ইঁদুর বাস করত।"
+            },
+            {
+                english: [
+                    { segment: "They were doing", bn: "তারা করছিল" },
+                    { segment: "a lot of mischief", bn: "প্রচুর অনিষ্ট বা দুষ্টুমি" },
+                    { segment: "there.", bn: "সেখানে।" }
+                ],
+                fullBn: "তারা সেখানে প্রচুর দুষ্টুমি করছিল।"
+            },
+            {
+                english: [
+                    { segment: "The master of the house", bn: "বাড়ির মালিক" },
+                    { segment: "was very annoyed", bn: "খুবই বিরক্ত হয়েছিলেন" },
+                    { segment: "and made a plan.", bn: "এবং একটি পরিকল্পনা করলেন।" }
+                ],
+                fullBn: "বাড়ির মালিক খুবই বিরক্ত হলেন এবং একটি পরিকল্পনা করলেন।"
+            },
+            {
+                english: [
+                    { segment: "He brought", bn: "তিনি আনলেন" },
+                    { segment: "a cat.", bn: "একটি বিড়াল।" }
+                ],
+                fullBn: "তিনি একটি বিড়াল নিয়ে আসলেন।"
+            },
+            {
+                english: [
+                    { segment: "As a result,", bn: "এর ফলে," },
+                    { segment: "the mice could not come out", bn: "ইঁদুরগুলো বের হতে পারল না" },
+                    { segment: "of their holes.", bn: "তাদের গর্ত থেকে।" }
+                ],
+                fullBn: "ফলে ইঁদুরগুলো তাদের গর্ত থেকে আর বের হতে পারল না।"
+            },
+            {
+                english: [
+                    { segment: "One day", bn: "একদিন" },
+                    { segment: "all the mice", bn: "সব ইঁদুর" },
+                    { segment: "sat together", bn: "একসাথে বসল" },
+                    { segment: "in order to find", bn: "খুঁজে বের করার উদ্দেশ্যে" },
+                    { segment: "a way out.", bn: "একটি মুক্তির পথ।" }
+                ],
+                fullBn: "একদিন সব ইঁদুর মিলে একটি উপায় বের করার জন্য একসাথে বসল।"
+            },
+            {
+                english: [
+                    { segment: "Different mice", bn: "ভিন্ন ভিন্ন ইঁদুর" },
+                    { segment: "gave", bn: "দিল" },
+                    { segment: "different suggestions.", bn: "ভিন্ন ভিন্ন পরামর্শ।" }
+                ],
+                fullBn: "বিভিন্ন ইঁদুর বিভিন্ন রকম পরামর্শ দিল।"
+            },
+            {
+                english: [
+                    { segment: "At last", bn: "অবশেষে" },
+                    { segment: "a young mouse", bn: "একটি তরুণ ইঁদুর" },
+                    { segment: "wanted to present", bn: "উপস্থাপন করতে চাইল" },
+                    { segment: "a proposal.", bn: "একটি প্রস্তাব।" }
+                ],
+                fullBn: "অবশেষে একটি তরুণ ইঁদুর একটি প্রস্তাব পেশ করতে চাইল।"
+            },
+            {
+                english: [
+                    { segment: "All the mice asked him", bn: "সব ইঁদুর তাকে বলল" },
+                    { segment: "to make his proposal.", bn: "তার প্রস্তাবটি দিতে।" }
+                ],
+                fullBn: "সব ইঁদুর তাকে তার প্রস্তাবটি দিতে বলল।"
+            },
+            {
+                english: [
+                    { segment: "Then the young mouse said,", bn: "তারপর তরুণ ইঁদুরটি বলল," },
+                    { segment: "\"If we tie a bell", bn: "\"যদি আমরা একটি ঘণ্টা বাঁধি" },
+                    { segment: "around the cat's neck,", bn: "বিড়ালের গলার চারপাশে," },
+                    { segment: "we'll be in a position to understand", bn: "তবে আমরা বুঝতে পারব" },
+                    { segment: "when the cat is coming.\"", bn: "কখন বিড়ালটি আসছে।\"" }
+                ],
+                fullBn: "তখন তরুণ ইঁদুরটি বলল, \"যদি আমরা বিড়ালের গলায় একটি ঘণ্টা বেঁধে দেই, তবে বিড়াল কখন আসছে আমরা তা বুঝতে পারব।\""
+            },
+            {
+                english: [
+                    { segment: "Before its coming,", bn: "এর আসার আগেই," },
+                    { segment: "we'll be able to hide.", bn: "আমরা লুকিয়ে পড়তে পারব।" }
+                ],
+                fullBn: "সে আসার আগেই আমরা লুকিয়ে পড়তে পারব।"
+            },
+            {
+                english: [
+                    { segment: "All the mice praised", bn: "সব ইঁদুর প্রশংসা করল" },
+                    { segment: "the proposal", bn: "প্রস্তাবটির" },
+                    { segment: "except the old one.", bn: "পুরনো ইঁদুরটি বাদে।" }
+                ],
+                fullBn: "বৃদ্ধ ইঁদুরটি ছাড়া বাকি সবাই এই প্রস্তাবের প্রশংসা করল।"
+            },
+            {
+                english: [
+                    { segment: "He stood up and said,", bn: "সে উঠে দাঁড়াল এবং বলল," },
+                    { segment: "\"the proposal is quite good,", bn: "\"প্রস্তাবটি বেশ ভালো," },
+                    { segment: "but who'll bell the cat?\"", bn: "কিন্তু বিড়ালের গলায় ঘণ্টা বাঁধবে কে?\"" }
+                ],
+                fullBn: "সে উঠে দাঁড়িয়ে বলল, \"প্রস্তাবটি বেশ ভালো, কিন্তু বিড়ালের গলায় ঘণ্টাটা বাঁধবে কে?\""
+            },
+            {
+                english: [
+                    { segment: "Hearing this,", bn: "একথা শুনে," },
+                    { segment: "all the mice began to look", bn: "সব ইঁদুর তাকাতে লাগল" },
+                    { segment: "at one another", bn: "একে অপরের দিকে" },
+                    { segment: "and felt disappointed.", bn: "এবং হতাশ হয়ে পড়ল।" }
+                ],
+                fullBn: "একথা শুনে সব ইঁদুর একে অপরের দিকে তাকাতে লাগল এবং হতাশ হয়ে পড়ল।"
+            },
+            {
+                english: [
+                    { segment: "Finding no solution,", bn: "কোন সমাধান না পেয়ে," },
+                    { segment: "the mice eventually migrated", bn: "ইঁদুরগুলো অবশেষে চলে গেল" },
+                    { segment: "to another place.", bn: "অন্য জায়গায়।" }
+                ],
+                fullBn: "কোন সমাধান না পেয়ে, ইঁদুরগুলো শেষ পর্যন্ত অন্য জায়গায় চলে গেল।"
+            }
+        ];
+
+        function playAudio(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.8;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleTranslation(index) {
+            const transDiv = document.getElementById(`trans-${index}`);
+            transDiv.classList.toggle('translation-active');
+        }
+
+        function renderStory() {
+            const container = document.getElementById('content');
+            
+            storyData.forEach((item, index) => {
+                const sentenceDiv = document.createElement('div');
+                sentenceDiv.className = "sentence-block";
+
+                const fullSentenceText = item.english.map(p => p.segment).join(' ');
+
+                let html = `
+                    <div class="flex items-start gap-4 md:gap-6">
+                        <!-- Left Speaker Icon -->
+                        <button onclick="playAudio('${fullSentenceText.replace(/'/g, "\\'")}')" class="icon-btn mt-1 text-blue-600" title="Listen full sentence">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>
+                        </button>
+                        
+                        <div class="flex-1">
+                            <!-- English Text - Bold and Large -->
+                            <div class="text-2xl md:text-3xl font-bold leading-snug tracking-tight text-gray-800">
+                `;
+
+                item.english.forEach(phrase => {
+                    html += `
+                        <span class="phrase-container relative inline-block">
+                            <span class="phrase-segment" onclick="playAudio('${phrase.segment.replace(/'/g, "\\'")}')">
+                                ${phrase.segment}
+                            </span>
+                            <span class="tooltip bengali-font">${phrase.bn}</span>
+                        </span>
+                    `;
+                });
+
+                html += `
+                                <!-- Language Toggle Icon -->
+                                <button onclick="toggleTranslation(${index})" class="icon-btn ml-3 text-emerald-600 align-middle" title="Show/Hide Translation">
+                                    <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6"></path><path d="m4 14 6-6 2-3"></path><path d="M2 5h12"></path><path d="M7 2h1"></path><path d="m22 22-5-10-5 10"></path><path d="M14 18h6"></path></svg>
+                                </button>
+                            </div>
+
+                            <!-- Bengali Translation - Equally Bold and Large -->
+                            <div id="trans-${index}" class="translation-box mt-5 p-5 bg-emerald-50 border-l-8 border-emerald-500 rounded-xl">
+                                <p class="bengali-font text-2xl md:text-3xl font-bold text-emerald-900 leading-relaxed">
+                                    ${item.fullBn}
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                `;
+
+                sentenceDiv.innerHTML = html;
+                container.appendChild(sentenceDiv);
+            });
+        }
+
+        window.onload = renderStory;
+    </script>
+</body>
+</html>
