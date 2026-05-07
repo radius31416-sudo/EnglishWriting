@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>The Story of Sheikh Saadi - Interactive Learning</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:wght@300;400;700&family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fdfbf7;
+            font-family: 'Lato', sans-serif;
+            color: #2d3436;
+        }
+        .bengali-font {
+            font-family: 'Noto Serif Bengali', serif;
+        }
+        .phrase-segment {
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: inline-block;
+            border-bottom: 2px solid transparent;
+            padding: 0 2px;
+            border-radius: 4px;
+        }
+        .phrase-segment:hover {
+            background-color: #fef3c7;
+            border-bottom: 2px solid #f59e0b;
+        }
+        .tooltip-custom {
+            position: absolute;
+            bottom: 120%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1f2937;
+            color: white;
+            padding: 4px 12px;
+            border-radius: 6px;
+            font-size: 1.25rem; /* Large font */
+            font-weight: 700;
+            white-space: nowrap;
+            z-index: 50;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.2s;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1);
+        }
+        .tooltip-custom::after {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: #1f2937 transparent transparent transparent;
+        }
+        .phrase-segment:active .tooltip-custom,
+        .phrase-segment.active .tooltip-custom {
+            opacity: 1;
+        }
+        .sentence-row {
+            margin-bottom: 1.5rem;
+            line-height: 2;
+        }
+        .translation-drawer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            color: #4b5563;
+        }
+        .translation-drawer.open {
+            max-height: 200px;
+            margin-top: 0.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 1px dashed #d1d5db;
+        }
+        .icon-btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: #e5e7eb;
+            cursor: pointer;
+            transition: background 0.2s;
+            vertical-align: middle;
+            margin: 0 6px;
+        }
+        .icon-btn:hover {
+            background: #d1d5db;
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-[99%] mx-auto bg-white shadow-sm border border-stone-200 rounded-xl overflow-hidden">
+        <!-- Header -->
+        <header class="bg-stone-800 text-white p-6 text-center">
+            <h1 class="text-3xl md:text-4xl font-bold mb-2">Sheikh Saadi's Wisdom</h1>
+            <p class="text-stone-400">Click phrases to hear pronunciation & see Bengali meanings.</p>
+            <p class="text-stone-400">Developed by - Azizul Haque</p>
+        </header>
+
+        <!-- Main Content Area -->
+        <main id="story-container" class="p-6 md:p-12 text-xl md:text-2xl">
+            <!-- Content injected by JavaScript -->
+        </main>
+    </div>
+
+    <script>
+        const storyData = [
+            {
+                english: "You must have heard the name of great poet Sheikh Saadi.",
+                bengali: "আপনারা নিশ্চয়ই মহান কবি শেখ সাদীর নাম শুনেছেন।",
+                phrases: [
+                    { en: "You must have heard", bn: "আপনারা নিশ্চয়ই শুনেছেন" },
+                    { en: "the name of", bn: "নাম" },
+                    { en: "great poet Sheikh Saadi.", bn: "মহান কবি শেখ সাদীর।" }
+                ]
+            },
+            {
+                english: "He was a great scholar.",
+                bengali: "তিনি একজন মহান পণ্ডিত ছিলেন।",
+                phrases: [
+                    { en: "He was", bn: "তিনি ছিলেন" },
+                    { en: "a great scholar.", bn: "একজন মহান পণ্ডিত।" }
+                ]
+            },
+            {
+                english: "He was very simple in his way of life.",
+                bengali: "তিনি তাঁর জীবনযাত্রায় অত্যন্ত সহজ-সরল ছিলেন।",
+                phrases: [
+                    { en: "He was very simple", bn: "তিনি অত্যন্ত সহজ-সরল ছিলেন" },
+                    { en: "in his way of life.", bn: "তাঁর জীবনযাত্রায়।" }
+                ]
+            },
+            {
+                english: "Once, the king of Persia invited the poet to his palace.",
+                bengali: "একদা পারস্যের রাজা কবিকে তাঁর প্রাসাদে আমন্ত্রণ জানান।",
+                phrases: [
+                    { en: "Once,", bn: "একদা," },
+                    { en: "the king of Persia", bn: "পারস্যের রাজা" },
+                    { en: "invited the poet", bn: "কবিকে আমন্ত্রণ জানান" },
+                    { en: "to his palace.", bn: "তাঁর প্রাসাদে।" }
+                ]
+            },
+            {
+                english: "The palace of the king was too far.",
+                bengali: "রাজার প্রাসাদ ছিল অনেক দূরে।",
+                phrases: [
+                    { en: "The palace of the king", bn: "রাজার প্রাসাদ" },
+                    { en: "was too far.", bn: "ছিল অনেক দূরে।" }
+                ]
+            },
+            {
+                english: "It was impossible for anyone to reach there within one day.",
+                bengali: "এক দিনের মধ্যে সেখানে পৌঁছানো যে কারও পক্ষে অসম্ভব ছিল।",
+                phrases: [
+                    { en: "It was impossible", bn: "এটি অসম্ভব ছিল" },
+                    { en: "for anyone", bn: "যে কারও পক্ষে" },
+                    { en: "to reach there", bn: "সেখানে পৌঁছানো" },
+                    { en: "within one day.", bn: "এক দিনের মধ্যে।" }
+                ]
+            },
+            {
+                english: "However, Saadi started for the king’s palace.",
+                bengali: "যাইহোক, সাদী রাজার প্রাসাদের উদ্দেশ্যে রওনা হলেন।",
+                phrases: [
+                    { en: "However,", bn: "যাইহোক," },
+                    { en: "Saadi started", bn: "সাদী রওনা হলেন" },
+                    { en: "for the king’s palace.", bn: "রাজার প্রাসাদের উদ্দেশ্যে।" }
+                ]
+            },
+            {
+                english: "On the way he took shelter in a rich man’s house.",
+                bengali: "পথে তিনি এক ধনী লোকের বাড়িতে আশ্রয় নিলেন।",
+                phrases: [
+                    { en: "On the way", bn: "পথে" },
+                    { en: "he took shelter", bn: "তিনি আশ্রয় নিলেন" },
+                    { en: "in a rich man’s house.", bn: "এক ধনী লোকের বাড়িতে।" }
+                ]
+            },
+            {
+                english: "The rich man underestimated him.",
+                bengali: "ধনী লোকটি তাকে অবমূল্যায়ন করেছিল।",
+                phrases: [
+                    { en: "The rich man", bn: "ধনী লোকটি" },
+                    { en: "underestimated him.", bn: "তাকে অবমূল্যায়ন করেছিল।" }
+                ]
+            },
+            {
+                english: "He did not give him rich food.",
+                bengali: "সে তাকে উন্নত মানের খাবার দেয়নি।",
+                phrases: [
+                    { en: "He did not give him", bn: "সে তাকে দেয়নি" },
+                    { en: "rich food.", bn: "উন্নত মানের খাবার।" }
+                ]
+            },
+            {
+                english: "Saadi left the house of his host in the early morning and started for the king’s palace.",
+                bengali: "সাদী খুব ভোরে তাঁর মেজবানের বাড়ি থেকে বের হলেন এবং রাজার প্রাসাদের উদ্দেশ্যে যাত্রা শুরু করলেন।",
+                phrases: [
+                    { en: "Saadi left the house", bn: "সাদী বাড়ি ত্যাগ করলেন" },
+                    { en: "of his host", bn: "তাঁর মেজবানের" },
+                    { en: "in the early morning", bn: "খুব ভোরে" },
+                    { en: "and started for", bn: "এবং যাত্রা শুরু করলেন" },
+                    { en: "the king’s palace.", bn: "রাজার প্রাসাদের উদ্দেশ্যে।" }
+                ]
+            },
+            {
+                english: "The poet recited his poems at the court and enchanted all the courtiers.",
+                bengali: "কবি দরবারে তাঁর কবিতা আবৃত্তি করেন এবং সকল সভাসদকে বিমোহিত করেন।",
+                phrases: [
+                    { en: "The poet recited his poems", bn: "কবি তাঁর কবিতা আবৃত্তি করেন" },
+                    { en: "at the court", bn: "দরবারে" },
+                    { en: "and enchanted", bn: "এবং বিমোহিত করেন" },
+                    { en: "all the courtiers.", bn: "সকল সভাসদকে।" }
+                ]
+            },
+            {
+                english: "Sheikh Saadi put on one of the nice dresses.",
+                bengali: "শেখ সাদী চমৎকার একটি পোশাক পরলেন।",
+                phrases: [
+                    { en: "Sheikh Saadi put on", bn: "শেখ সাদী পরলেন" },
+                    { en: "one of the nice dresses.", bn: "চমৎকার একটি পোশাক।" }
+                ]
+            },
+            {
+                english: "However, he left the palace of the king for his home.",
+                bengali: "যাইহোক, তিনি রাজার প্রাসাদ ছেড়ে নিজের বাড়ির উদ্দেশ্যে রওনা হলেন।",
+                phrases: [
+                    { en: "However, he left", bn: "যাইহোক, তিনি ছাড়লেন" },
+                    { en: "the palace of the king", bn: "রাজার প্রাসাদ" },
+                    { en: "for his home.", bn: "বাড়ির উদ্দেশ্যে।" }
+                ]
+            },
+            {
+                english: "On the way, Saadi took shelter in the same house.",
+                bengali: "পথে সাদী একই বাড়িতে আশ্রয় নিলেন।",
+                phrases: [
+                    { en: "On the way,", bn: "পথে," },
+                    { en: "Saadi took shelter", bn: "সাদী আশ্রয় নিলেন" },
+                    { en: "in the same house.", bn: "একই বাড়িতে।" }
+                ]
+            },
+            {
+                english: "Seeing the nice dress of Sadi, the rich man gave him rich food and honour.",
+                bengali: "সাদীর চমৎকার পোশাক দেখে ধনী লোকটি তাকে ভালো খাবার ও সম্মান দিল।",
+                phrases: [
+                    { en: "Seeing the nice dress of Sadi,", bn: "সাদীর চমৎকার পোশাক দেখে," },
+                    { en: "the rich man gave him", bn: "ধনী লোকটি তাকে দিল" },
+                    { en: "rich food and honour.", bn: "উন্নত খাবার ও সম্মান।" }
+                ]
+            },
+            {
+                english: "But he did not eat the food and began to keep them in the pockets of his dress.",
+                bengali: "কিন্তু তিনি খাবার না খেয়ে তার পোশাকের পকেটে রাখতে লাগলেন।",
+                phrases: [
+                    { en: "But he did not eat the food", bn: "কিন্তু তিনি খাবার খেলেন না" },
+                    { en: "and began to keep them", bn: "এবং সেগুলো রাখতে শুরু করলেন" },
+                    { en: "in the pockets of his dress.", bn: "তার পোশাকের পকেটে।" }
+                ]
+            },
+            {
+                english: "The people of the house were astonished.",
+                bengali: "বাড়ির লোকজন অবাক হয়ে গেল।",
+                phrases: [
+                    { en: "The people of the house", bn: "বাড়ির লোকজন" },
+                    { en: "were astonished.", bn: "অবাক হয়ে গেল।" }
+                ]
+            },
+            {
+                english: "They asked him about it.",
+                bengali: "তারা এ ব্যাপারে তাকে জিজ্ঞেস করল।",
+                phrases: [
+                    { en: "They asked him", bn: "তারা তাকে জিজ্ঞেস করল" },
+                    { en: "about it.", bn: "এ ব্যাপারে।" }
+                ]
+            },
+            {
+                english: "Sheikh Saadi said to them, “I took shelter in this house while I was going to the palace of the king.",
+                bengali: "শেখ সাদী তাদের বললেন, “আমি যখন রাজার প্রাসাদে যাচ্ছিলাম তখন এই বাড়িতে আশ্রয় নিয়েছিলাম।",
+                phrases: [
+                    { en: "Sheikh Saadi said to them,", bn: "শেখ সাদী তাদের বললেন," },
+                    { en: "I took shelter in this house", bn: "আমি এই বাড়িতে আশ্রয় নিয়েছিলাম" },
+                    { en: "while I was going", bn: "যখন আমি যাচ্ছিলাম" },
+                    { en: "to the palace of the king.", bn: "রাজার প্রাসাদের উদ্দেশ্যে।" }
+                ]
+            },
+            {
+                english: "Then I was not well dressed.",
+                bengali: "তখন আমি ভালো পোশাকে ছিলাম না।",
+                phrases: [
+                    { en: "Then", bn: "তখন" },
+                    { en: "I was not", bn: "আমি ছিলাম না" },
+                    { en: "well dressed.", bn: "ভালো পোশাকে।" }
+                ]
+            },
+            {
+                english: "So you did not give me this kind of food.",
+                bengali: "তাই তুমি আমাকে এই ধরনের খাবার দাওনি।",
+                phrases: [
+                    { en: "So you did not give me", bn: "তাই তুমি আমাকে দাওনি" },
+                    { en: "this kind of food.", bn: "এই ধরনের খাবার।" }
+                ]
+            },
+            {
+                english: "I think my present rich dress deserves this food.",
+                bengali: "আমি মনে করি আমার বর্তমান মূল্যবান পোশাকই এই খাবারের যোগ্য।",
+                phrases: [
+                    { en: "I think", bn: "আমি মনে করি" },
+                    { en: "my present rich dress", bn: "আমার বর্তমান দামী পোশাক" },
+                    { en: "deserves this food.", bn: "এই খাবারের যোগ্য।" }
+                ]
+            },
+            {
+                english: "So, I am doing so.",
+                bengali: "তাই আমি এমন করছি।",
+                phrases: [
+                    { en: "So,", bn: "তাই," },
+                    { en: "I am doing so.", bn: "আমি এমন করছি।" }
+                ]
+            },
+            {
+                english: "The owner as well as the people of the house realized their fault and apologized to their host for their deeds.",
+                bengali: "বাড়ির মালিকের পাশাপাশি লোকজনও তাদের ভুল বুঝতে পেরেছিল এবং তাদের কাজের জন্য তাদের অতিথির কাছে ক্ষমা চেয়েছিল।",
+                phrases: [
+                    { en: "The owner as well as the people", bn: "মালিক ও লোকজন উভয়ই" },
+                    { en: "realized their fault", bn: "তাদের ভুল বুঝতে পারল" },
+                    { en: "and apologized", bn: "এবং ক্ষমা চাইল" },
+                    { en: "for their deeds.", bn: "তাদের কাজের জন্য।" }
+                ]
+            }
+        ];
+
+        const container = document.getElementById('story-container');
+
+        function speak(text, rate = 0.8) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = rate;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function toggleTranslation(id) {
+            const el = document.getElementById(`trans-${id}`);
+            el.classList.toggle('open');
+        }
+
+        function renderStory() {
+            storyData.forEach((item, index) => {
+                const sentenceDiv = document.createElement('div');
+                sentenceDiv.className = 'sentence-row';
+
+                // Speaker Icon (Start)
+                const speakerBtn = document.createElement('span');
+                speakerBtn.className = 'icon-btn text-blue-600';
+                speakerBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M11.536 14.01A8.473 8.473 0 0 0 14.026 8a8.473 8.473 0 0 0-2.49-6.01l-.708.707A7.476 7.476 0 0 1 13.025 8c0 2.071-.84 3.946-2.197 5.303l.708.707z"/><path d="M10.121 12.596A6.48 6.48 0 0 0 12.025 8a6.48 6.48 0 0 0-1.904-4.596l-.707.707A5.483 5.483 0 0 1 11.025 8a5.483 5.483 0 0 1-1.61 3.89l.706.706z"/><path d="M8.707 11.182A4.486 4.486 0 0 0 10.025 8a4.486 4.486 0 0 0-1.318-3.182L8 5.525A3.489 3.489 0 0 1 9.025 8 3.49 3.49 0 0 1 8 10.475l.707.707zM6.717 3.55A.5.5 0 0 1 7 4v8a.5.5 0 0 1-.812.39L3.825 10.5H1.5A.5.5 0 0 1 1 10V6a.5.5 0 0 1 .5-.5h2.325l2.363-1.89a.5.5 0 0 1 .529-.06z"/></svg>`;
+                speakerBtn.onclick = () => speak(item.english, 0.7);
+
+                // Language Icon (End)
+                const langBtn = document.createElement('span');
+                langBtn.className = 'icon-btn text-green-600';
+                langBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16"><path d="M4.545 6.714 4.11 8H3l1.862-5h1.284L8 8H6.833l-.435-1.286H4.545zm1.634-1.217L5.432 3.32h-.058l-.744 2.177h1.549z"/><path d="M0 2a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2H2a2 2 0 0 1-2-2V2zm11.533 1.212c-1.153 0-2.053.87-2.053 2.084 0 1.287 1.058 2.236 2.302 2.236 1.122 0 1.821-.641 2.28-1.099l-.532-.551c-.404.374-.937.767-1.582.767-.856 0-1.503-.69-1.503-1.404 0-.837.62-1.395 1.503-1.395.695 0 1.139.346 1.558.677l.531-.583c-.439-.433-1.077-.732-2.003-.732z"/></svg>`;
+                langBtn.onclick = () => toggleTranslation(index);
+
+                const phraseContainer = document.createElement('span');
+                
+                item.phrases.forEach(p => {
+                    const span = document.createElement('span');
+                    span.className = 'phrase-segment relative';
+                    span.innerHTML = `
+                        ${p.en}
+                        <span class="tooltip-custom bengali-font">${p.bn}</span>
+                    `;
+                    
+                    span.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        // Remove active class from others
+                        document.querySelectorAll('.phrase-segment').forEach(el => el.classList.remove('active'));
+                        // Add active class to this
+                        span.classList.add('active');
+                        // Speak phrase
+                        speak(p.en, 0.6);
+                        // Auto hide tooltip after 2.5s
+                        setTimeout(() => span.classList.remove('active'), 2500);
+                    });
+
+                    phraseContainer.appendChild(span);
+                    phraseContainer.appendChild(document.createTextNode(' '));
+                });
+
+                const translationDiv = document.createElement('div');
+                translationDiv.id = `trans-${index}`;
+                translationDiv.className = 'translation-drawer bengali-font font-bold text-xl md:text-2xl';
+                translationDiv.innerText = item.bengali;
+
+                sentenceDiv.appendChild(speakerBtn);
+                sentenceDiv.appendChild(phraseContainer);
+                sentenceDiv.appendChild(langBtn);
+                sentenceDiv.appendChild(translationDiv);
+
+                container.appendChild(sentenceDiv);
+            });
+        }
+
+        window.onload = renderStory;
+
+        // Close tooltips when clicking outside
+        document.addEventListener('click', () => {
+            document.querySelectorAll('.phrase-segment').forEach(el => el.classList.remove('active'));
+        });
+    </script>
+</body>
+</html>
