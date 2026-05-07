@@ -1,0 +1,420 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive English Lesson: King Midas</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,400;0,700;1,400&family=Noto+Serif+Bengali:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #fdfbf7;
+            --text-main: #2c3e50;
+            --highlight: #fef3c7;
+            --accent: #d97706;
+        }
+        body {
+            background-color: var(--bg-color);
+            font-family: 'Lato', sans-serif;
+            color: var(--text-main);
+            overflow-x: hidden;
+        }
+        .bengali-font {
+            font-family: 'Noto Serif Bengali', serif;
+        }
+        .phrase-segment {
+            cursor: pointer;
+            transition: background-color 0.2s;
+            border-radius: 4px;
+            padding: 0 4px;
+            position: relative;
+            display: inline-block;
+        }
+        .phrase-segment:hover {
+            background-color: var(--highlight);
+        }
+        /* টুলটিপ ডিজাইন */
+        .tooltip {
+            position: absolute;
+            bottom: 130%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: #1a1a1a;
+            color: white;
+            padding: 6px 14px;
+            border-radius: 8px;
+            white-space: nowrap;
+            z-index: 100;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.2s, visibility 0.2s;
+            font-weight: bold;
+            font-size: 1.3rem;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        /* ট্রায়াঙ্গেল অ্যারো */
+        .tooltip::after {
+            content: "";
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            margin-left: -8px;
+            border-width: 8px;
+            border-style: solid;
+            border-color: #1a1a1a transparent transparent transparent;
+        }
+        /* যখন একটি ফ্রেজ অ্যাক্টিভ থাকবে */
+        .phrase-segment.active .tooltip {
+            opacity: 1;
+            visibility: visible;
+        }
+        .phrase-segment.active {
+            background-color: var(--highlight);
+            box-shadow: 0 0 0 2px var(--accent);
+        }
+
+        .sentence-row {
+            margin-bottom: 1.8rem;
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 10px;
+        }
+        .translation-box {
+            width: 100%;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, margin 0.3s, opacity 0.3s;
+            background: #f8f9fa;
+            border-left: 5px solid var(--accent);
+            border-radius: 0 8px 8px 0;
+            opacity: 0;
+        }
+        .translation-box.open {
+            max-height: 300px;
+            margin-top: 12px;
+            padding: 15px;
+            opacity: 1;
+        }
+        .icon-btn {
+            padding: 8px;
+            border-radius: 50%;
+            transition: all 0.2s;
+            color: #64748b;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: #f1f5f9;
+        }
+        .icon-btn:hover {
+            background-color: #e2e8f0;
+            color: var(--accent);
+            transform: scale(1.1);
+        }
+    </style>
+</head>
+<body class="p-4 md:p-8">
+
+    <div class="max-w-[99%] mx-auto bg-white shadow-md border border-stone-200 rounded-2xl p-6 md:p-12">
+        <!-- Header -->
+        <header class="mb-12 border-b border-stone-100 pb-8 text-center">
+            <h1 class="text-4xl md:text-5xl font-bold text-stone-800 mb-4">King Midas and the Golden Touch</h1>
+            <p class="text-stone-500 italic text-lg">Click on phrases to see meanings. Use icons for full sentence audio and translation.</p>
+             <p class="text-stone-500 italic text-lg">Azizul Haque</p>
+        </header>
+
+        <!-- Story Container -->
+        <div id="story-container" class="text-2xl md:text-3xl leading-[1.8] text-stone-700">
+            <!-- Content generated via JavaScript -->
+        </div>
+    </div>
+
+    <script>
+        const storyData = [
+            {
+                en: "Once upon a time there was a king.",
+                bn: "একদা এক সময় একজন রাজা ছিলেন।",
+                segments: [
+                    { text: "Once upon a time", trans: "একদা এক সময়" },
+                    { text: "there was", trans: "সেখানে ছিল" },
+                    { text: "a king.", trans: "একজন রাজা।" }
+                ]
+            },
+            {
+                en: "His name was Midas.",
+                bn: "তাঁর নাম ছিল মিডাস।",
+                segments: [
+                    { text: "His name", trans: "তাঁর নাম" },
+                    { text: "was Midas.", trans: "ছিল মিডাস।" }
+                ]
+            },
+            {
+                en: "The king was very greedy.",
+                bn: "রাজা খুব লোভী ছিলেন।",
+                segments: [
+                    { text: "The king", trans: "রাজা" },
+                    { text: "was very greedy.", trans: "খুব লোভী ছিলেন।" }
+                ]
+            },
+            {
+                en: "He was very much fond of gold.",
+                bn: "তিনি স্বর্ণের খুব ভক্ত ছিলেন।",
+                segments: [
+                    { text: "He was", trans: "তিনি ছিলেন" },
+                    { text: "very much fond", trans: "খুবই ভক্ত" },
+                    { text: "of gold.", trans: "স্বর্ণের।" }
+                ]
+            },
+            {
+                en: "Although he had a lot of it, he wanted more.",
+                bn: "যদিও তাঁর কাছে প্রচুর স্বর্ণ ছিল, তবুও তিনি আরও চেয়েছিলেন।",
+                segments: [
+                    { text: "Although", trans: "যদিও" },
+                    { text: "he had a lot of it,", trans: "তাঁর কাছে প্রচুর ছিল," },
+                    { text: "he wanted more.", trans: "তিনি আরও চেয়েছিলেন।" }
+                ]
+            },
+            {
+                en: "He thought if he had the golden touch he would be the happiest man in the world.",
+                bn: "তিনি ভাবতেন যদি তাঁর স্বর্ণস্পর্শ ক্ষমতা থাকত তবে তিনি পৃথিবীর সবচেয়ে সুখী মানুষ হতেন।",
+                segments: [
+                    { text: "He thought", trans: "তিনি ভাবলেন" },
+                    { text: "if he had", trans: "যদি তাঁর থাকত" },
+                    { text: "the golden touch", trans: "স্বর্ণস্পর্শ" },
+                    { text: "he would be", trans: "তিনি হতেন" },
+                    { text: "the happiest man", trans: "সবচেয়ে সুখী মানুষ" },
+                    { text: "in the world.", trans: "পৃথিবীর মধ্যে।" }
+                ]
+            },
+            {
+                en: "He always thought it and wanted gold.",
+                bn: "তিনি সব সময় এটা ভাবতেন এবং স্বর্ণ চেয়েছিলেন।",
+                segments: [
+                    { text: "He always thought it", trans: "তিনি সব সময় এটি ভাবতেন" },
+                    { text: "and wanted gold.", trans: "এবং স্বর্ণ চেয়েছিলেন।" }
+                ]
+            },
+            {
+                en: "Even he prayed to gods to fulfill his desire.",
+                bn: "এমনকি তিনি তাঁর ইচ্ছা পূরণের জন্য দেবতাদের কাছে প্রার্থনাও করেছিলেন।",
+                segments: [
+                    { text: "Even he prayed", trans: "এমনকি তিনি প্রার্থনা করেছিলেন" },
+                    { text: "to gods", trans: "দেবতাদের কাছে" },
+                    { text: "to fulfill his desire.", trans: "তাঁর ইচ্ছা পূরণের জন্য।" }
+                ]
+            },
+            {
+                en: "At last a wise god granted his prayer.",
+                bn: "অবশেষে এক জ্ঞানী দেবতা তাঁর প্রার্থনা মঞ্জুর করলেন।",
+                segments: [
+                    { text: "At last", trans: "অবশেষে" },
+                    { text: "a wise god", trans: "একজন জ্ঞানী দেবতা" },
+                    { text: "granted his prayer.", trans: "তাঁর প্রার্থনা মঞ্জুর করলেন।" }
+                ]
+            },
+            {
+                en: "One day the king was walking in his apple garden.",
+                bn: "একদিন রাজা তাঁর আপেল বাগানে হাঁটছিলেন।",
+                segments: [
+                    { text: "One day", trans: "একদিন" },
+                    { text: "the king was walking", trans: "রাজা হাঁটছিলেন" },
+                    { text: "in his apple garden.", trans: "তাঁর আপেল বাগানে।" }
+                ]
+            },
+            {
+                en: "Suddenly, a ripe apple fell from the apple tree.",
+                bn: "হঠাৎ আপেল গাছ থেকে একটি পাকা আপেল পড়ল।",
+                segments: [
+                    { text: "Suddenly,", trans: "হঠাৎ," },
+                    { text: "a ripe apple fell", trans: "একটি পাকা আপেল পড়ল" },
+                    { text: "from the apple tree.", trans: "আপেল গাছ থেকে।" }
+                ]
+            },
+            {
+                en: "He wanted to pick it up.",
+                bn: "তিনি এটি কুড়িয়ে নিতে চাইলেন।",
+                segments: [
+                    { text: "He wanted", trans: "তিনি চেয়েছিলেন" },
+                    { text: "to pick it up.", trans: "এটি কুড়িয়ে নিতে।" }
+                ]
+            },
+            {
+                en: "No sooner had he touched it than the apple turned into gold.",
+                bn: "তিনি এটি স্পর্শ করতে না করতেই আপেলটি স্বর্ণে পরিণত হলো।",
+                segments: [
+                    { text: "No sooner had he touched it", trans: "তিনি এটি স্পর্শ করতে না করতেই" },
+                    { text: "than the apple", trans: "আপেলটি" },
+                    { text: "turned into gold.", trans: "স্বর্ণে পরিণত হলো।" }
+                ]
+            },
+            {
+                en: "From the garden he came to his palace.",
+                bn: "বাগান থেকে তিনি তাঁর প্রাসাদে এলেন।",
+                segments: [
+                    { text: "From the garden", trans: "বাগান থেকে" },
+                    { text: "he came", trans: "তিনি এলেন" },
+                    { text: "to his palace.", trans: "তাঁর প্রাসাদে।" }
+                ]
+            },
+            {
+                en: "When he entered his palace, his little daughter ran up to him.",
+                bn: "যখন তিনি তাঁর প্রাসাদে প্রবেশ করলেন, তাঁর ছোট মেয়ে তাঁর কাছে ছুটে এল।",
+                segments: [
+                    { text: "When he entered", trans: "যখন তিনি প্রবেশ করলেন" },
+                    { text: "his palace,", trans: "তাঁর প্রাসাদে," },
+                    { text: "his little daughter", trans: "তাঁর ছোট মেয়ে" },
+                    { text: "ran up to him.", trans: "তাঁর কাছে ছুটে এল।" }
+                ]
+            },
+            {
+                en: "The king took her in his arms.",
+                bn: "রাজা তাকে কোলে তুলে নিলেন।",
+                segments: [
+                    { text: "The king took her", trans: "রাজা তাকে নিলেন" },
+                    { text: "in his arms.", trans: "তাঁর বাহুডোরে/কোলে।" }
+                ]
+            },
+            {
+                en: "Instantly she turned into gold.",
+                bn: "তৎক্ষণাৎ সে স্বর্ণে পরিণত হলো।",
+                segments: [
+                    { text: "Instantly", trans: "তৎক্ষণাৎ" },
+                    { text: "she turned", trans: "সে পরিণত হলো" },
+                    { text: "into gold.", trans: "স্বর্ণে।" }
+                ]
+            },
+            {
+                en: "The king became upset and prayed to be free from the boon of the god.",
+                bn: "রাজা বিমর্ষ হয়ে পড়লেন এবং দেবতার সেই বর থেকে মুক্তি পেতে প্রার্থনা করলেন।",
+                segments: [
+                    { text: "The king became upset", trans: "রাজা বিমর্ষ হয়ে পড়লেন" },
+                    { text: "and prayed", trans: "এবং প্রার্থনা করলেন" },
+                    { text: "to be free", trans: "মুক্ত হতে" },
+                    { text: "from the boon of the god.", trans: "দেবতার সেই বর থেকে।" }
+                ]
+            },
+            {
+                en: "The wise god accepted his prayer and took the golden touch boon from him.",
+                bn: "জ্ঞানী দেবতা তাঁর প্রার্থনা কবুল করলেন এবং তাঁর থেকে স্বর্ণস্পর্শের বরটি ফিরিয়ে নিলেন।",
+                segments: [
+                    { text: "The wise god", trans: "জ্ঞানী দেবতা" },
+                    { text: "accepted his prayer", trans: "তাঁর প্রার্থনা কবুল করলেন" },
+                    { text: "and took the golden touch boon", trans: "এবং স্বর্ণস্পর্শের বরটি নিয়ে নিলেন" },
+                    { text: "from him.", trans: "তাঁর থেকে।" }
+                ]
+            },
+            {
+                en: "The daughter of the king turned into normal being again.",
+                bn: "রাজার মেয়ে আবার স্বাভাবিক মানুষে পরিণত হলো।",
+                segments: [
+                    { text: "The daughter of the king", trans: "রাজার মেয়ে" },
+                    { text: "turned into", trans: "পরিণত হলো" },
+                    { text: "normal being again.", trans: "আবার স্বাভাবিক মানুষে।" }
+                ]
+            },
+            {
+                en: "The king realized that too much greediness destroys everything.",
+                bn: "রাজা উপলব্ধি করলেন যে অতি লোভ সবকিছু ধ্বংস করে দেয়।",
+                segments: [
+                    { text: "The king realized", trans: "রাজা উপলব্ধি করলেন" },
+                    { text: "that too much greediness", trans: "যে অতি লোভ" },
+                    { text: "destroys everything.", trans: "সবকিছু ধ্বংস করে দেয়।" }
+                ]
+            }
+        ];
+
+        const container = document.getElementById('story-container');
+
+        function speakText(text) {
+            window.speechSynthesis.cancel();
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'en-US';
+            utterance.rate = 0.75; // একটু ধীর গতি
+            window.speechSynthesis.speak(utterance);
+        }
+
+        // সমস্ত টুলটিপ বন্ধ করার ফাংশন
+        function closeAllTooltips() {
+            document.querySelectorAll('.phrase-segment').forEach(el => {
+                el.classList.remove('active');
+            });
+        }
+
+        function createStory() {
+            storyData.forEach((item, index) => {
+                const row = document.createElement('div');
+                row.className = 'sentence-row';
+
+                // স্পিকার আইকন (বাক্য পড়ার জন্য)
+                const speakBtn = document.createElement('div');
+                speakBtn.className = 'icon-btn';
+                speakBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon><path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path><path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path></svg>`;
+                speakBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    closeAllTooltips();
+                    speakText(item.en);
+                };
+                row.appendChild(speakBtn);
+
+                // ইংরেজি সেগমেন্টগুলো তৈরি করা
+                item.segments.forEach(seg => {
+                    const span = document.createElement('span');
+                    span.className = 'phrase-segment';
+                    span.innerHTML = `
+                        ${seg.text}
+                        <span class="tooltip bengali-font">${seg.trans}</span>
+                    `;
+                    
+                    span.onclick = (e) => {
+                        e.stopPropagation();
+                        const wasActive = span.classList.contains('active');
+                        closeAllTooltips(); // অন্য সব বন্ধ করো
+                        
+                        if (!wasActive) {
+                            span.classList.add('active'); // এটাকে অ্যাক্টিভ করো
+                            speakText(seg.text); // অডিও চালাও
+                        }
+                    };
+                    row.appendChild(span);
+                });
+
+                // অনুবাদ আইকন (নিচে নামার জন্য)
+                const transBtn = document.createElement('div');
+                transBtn.className = 'icon-btn';
+                transBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m5 8 6 6 6-6"></path></svg>`;
+                
+                const transBox = document.createElement('div');
+                transBox.className = 'translation-box bengali-font text-2xl font-bold';
+                transBox.textContent = item.bn;
+
+                transBtn.onclick = (e) => {
+                    e.stopPropagation();
+                    closeAllTooltips();
+                    const isOpen = transBox.classList.contains('open');
+                    
+                    // অন্যান্য খোলা অনুবাদ বক্স বন্ধ করা (অপশনাল - সব একসাথে খোলা রাখতে চাইলে এই লাইন বাদ দিন)
+                    // document.querySelectorAll('.translation-box').forEach(b => b.classList.remove('open'));
+                    
+                    transBox.classList.toggle('open');
+                    transBtn.style.transform = transBox.classList.contains('open') ? 'rotate(180deg)' : 'rotate(0deg)';
+                };
+
+                row.appendChild(transBtn);
+                row.appendChild(transBox);
+                
+                container.appendChild(row);
+            });
+        }
+
+        // ডকুমেন্টের যেকোনো জায়গায় ক্লিক করলে টুলটিপ বন্ধ হবে
+        document.addEventListener('click', () => {
+            closeAllTooltips();
+        });
+
+        window.onload = createStory;
+    </script>
+</body>
+</html>
