@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>RADIUS ACADEMY</title>
+<link href="https://fonts.googleapis.com/css2?family=Tiro+Bangla:ital@0;1&family=Noto+Sans+Bengali:wght@400;600;700;800&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --deep-navy: #0a1628;
+    --electric-blue: #1a6ff5;
+    --cyan: #00d4ff;
+    --gold: #f5c842;
+    --soft-white: #f0f6ff;
+    --mid: #8ab4e8;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--deep-navy);
+    font-family: 'Noto Sans Bengali', sans-serif;
+    color: var(--soft-white);
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+
+  /* Background grid */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(26,111,245,0.07) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(26,111,245,0.07) 1px, transparent 1px);
+    background-size: 40px 40px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .page {
+    position: relative;
+    z-index: 1;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px 30px 60px;
+  }
+
+  /* ─── HEADER ─── */
+  .header {
+    text-align: center;
+    padding: 50px 20px 40px;
+    position: relative;
+  }
+
+  .header-glow {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 500px;
+    height: 300px;
+    background: radial-gradient(ellipse, rgba(0,212,255,0.18) 0%, transparent 70%);
+    pointer-events: none;
+  }
+
+  .academy-badge {
+    display: inline-block;
+    background: linear-gradient(135deg, rgba(26,111,245,0.3), rgba(0,212,255,0.2));
+    border: 1px solid rgba(0,212,255,0.4);
+    border-radius: 50px;
+    padding: 6px 24px;
+    font-size: 11px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--cyan);
+    margin-bottom: 18px;
+    font-family: 'Tiro Bangla', serif;
+  }
+
+  .logo-text {
+    font-size: clamp(42px, 10vw, 80px);
+    font-weight: 800;
+    letter-spacing: -2px;
+    line-height: 1;
+    background: linear-gradient(135deg, #ffffff 0%, var(--cyan) 50%, var(--electric-blue) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    position: relative;
+  }
+
+  .logo-text span {
+    background: linear-gradient(135deg, var(--gold) 0%, #ffaa00 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .tagline {
+    font-size: 14px;
+    color: var(--mid);
+    margin-top: 14px;
+    letter-spacing: 1px;
+    font-family: 'Tiro Bangla', serif;
+    font-style: italic;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin: 36px 0;
+  }
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(0,212,255,0.5), transparent);
+  }
+  .divider-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, var(--electric-blue), var(--cyan));
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    flex-shrink: 0;
+  }
+
+  /* ─── INTRO HEADLINE ─── */
+  .intro-headline {
+    text-align: center;
+    font-size: clamp(20px, 4vw, 28px);
+    font-weight: 700;
+    line-height: 1.5;
+    color: #fff;
+    padding: 0 20px;
+    margin-bottom: 10px;
+  }
+  .intro-headline .highlight {
+    color: var(--gold);
+  }
+  .intro-sub {
+    text-align: center;
+    color: var(--mid);
+    font-size: 14px;
+    margin-bottom: 50px;
+    font-family: 'Tiro Bangla', serif;
+    font-style: italic;
+  }
+
+  /* ─── FEATURE GRID ─── */
+  .features-title {
+    text-align: center;
+    font-size: 13px;
+    letter-spacing: 3px;
+    color: var(--cyan);
+    text-transform: uppercase;
+    margin-bottom: 30px;
+  }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 18px;
+    margin-bottom: 40px;
+  }
+
+  @media (max-width: 600px) {
+    .features-grid { grid-template-columns: 1fr; }
+    .wide-card { grid-column: span 1 !important; }
+  }
+
+  .feature-card {
+    background: linear-gradient(135deg, rgba(26,111,245,0.12), rgba(0,212,255,0.06));
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 16px;
+    padding: 24px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color 0.3s, transform 0.3s;
+  }
+
+  .feature-card:hover {
+    border-color: rgba(0,212,255,0.5);
+    transform: translateY(-3px);
+  }
+
+  .feature-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, var(--electric-blue), var(--cyan));
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+  .feature-card:hover::before { opacity: 1; }
+
+  .wide-card {
+    grid-column: span 2;
+  }
+
+  .card-icon {
+    width: 46px;
+    height: 46px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    margin-bottom: 14px;
+    flex-shrink: 0;
+  }
+
+  .icon-blue   { background: rgba(26,111,245,0.25); border: 1px solid rgba(26,111,245,0.4); }
+  .icon-cyan   { background: rgba(0,212,255,0.2);   border: 1px solid rgba(0,212,255,0.4); }
+  .icon-gold   { background: rgba(245,200,66,0.2);  border: 1px solid rgba(245,200,66,0.4); }
+  .icon-purple { background: rgba(160,80,255,0.2);  border: 1px solid rgba(160,80,255,0.4); }
+  .icon-green  { background: rgba(0,210,120,0.2);   border: 1px solid rgba(0,210,120,0.4); }
+  .icon-orange { background: rgba(255,140,0,0.2);   border: 1px solid rgba(255,140,0,0.4); }
+  .icon-pink   { background: rgba(255,80,120,0.2);  border: 1px solid rgba(255,80,120,0.4); }
+
+  .card-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 8px;
+    line-height: 1.4;
+  }
+
+  .card-body {
+    font-size: 13px;
+    color: #9ab8d8;
+    line-height: 1.75;
+    font-family: 'Tiro Bangla', serif;
+  }
+
+  /* ─── STAR BADGE ─── */
+  .star {
+    display: inline-block;
+    color: var(--gold);
+    font-size: 11px;
+    margin-right: 4px;
+    vertical-align: middle;
+  }
+
+  /* ─── HIGHLIGHT BAND ─── */
+  .highlight-band {
+    background: linear-gradient(135deg, rgba(245,200,66,0.12), rgba(26,111,245,0.12));
+    border: 1px solid rgba(245,200,66,0.3);
+    border-radius: 16px;
+    padding: 28px 30px;
+    margin: 40px 0;
+    display: flex;
+    align-items: center;
+    gap: 24px;
+  }
+
+  .band-icon {
+    font-size: 42px;
+    flex-shrink: 0;
+  }
+
+  .band-text h3 {
+    font-size: 17px;
+    font-weight: 700;
+    color: var(--gold);
+    margin-bottom: 6px;
+  }
+
+  .band-text p {
+    font-size: 13px;
+    color: #9ab8d8;
+    line-height: 1.7;
+    font-family: 'Tiro Bangla', serif;
+  }
+
+  /* ─── FOOTER ─── */
+  .footer {
+    text-align: center;
+    padding: 40px 20px 10px;
+    border-top: 1px solid rgba(0,212,255,0.15);
+    margin-top: 50px;
+  }
+
+  .footer-logo {
+    font-size: 26px;
+    font-weight: 800;
+    background: linear-gradient(135deg, #fff, var(--cyan));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -1px;
+    margin-bottom: 6px;
+  }
+
+  .footer-tagline {
+    font-size: 12px;
+    color: rgba(138,180,232,0.7);
+    font-family: 'Tiro Bangla', serif;
+    font-style: italic;
+    margin-bottom: 20px;
+  }
+
+  .footer-dots {
+    display: flex;
+    justify-content: center;
+    gap: 8px;
+  }
+  .dot {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--cyan);
+    opacity: 0.4;
+  }
+  .dot.active { opacity: 1; background: var(--gold); width: 20px; border-radius: 3px; }
+
+  /* Animations */
+  @keyframes fadeInUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .header          { animation: fadeInUp 0.6s ease both; }
+  .intro-headline  { animation: fadeInUp 0.6s 0.15s ease both; }
+  .intro-sub       { animation: fadeInUp 0.6s 0.2s ease both; }
+  .feature-card    { animation: fadeInUp 0.5s ease both; }
+  .feature-card:nth-child(1) { animation-delay: 0.1s; }
+  .feature-card:nth-child(2) { animation-delay: 0.15s; }
+  .feature-card:nth-child(3) { animation-delay: 0.2s; }
+  .feature-card:nth-child(4) { animation-delay: 0.25s; }
+  .feature-card:nth-child(5) { animation-delay: 0.3s; }
+  .feature-card:nth-child(6) { animation-delay: 0.35s; }
+  .feature-card:nth-child(7) { animation-delay: 0.4s; }
+  .highlight-band  { animation: fadeInUp 0.6s 0.45s ease both; }
+
+  /* Floating orbs */
+  .orb {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(80px);
+    opacity: 0.12;
+    pointer-events: none;
+    z-index: 0;
+  }
+  .orb-1 { width: 400px; height: 400px; background: var(--electric-blue); top: -100px; right: -100px; }
+  .orb-2 { width: 300px; height: 300px; background: var(--cyan);          bottom: 200px; left: -80px; }
+  .orb-3 { width: 250px; height: 250px; background: var(--gold);          bottom: -50px; right: 200px; }
+</style>
+</head>
+<body>
+
+<div class="orb orb-1"></div>
+<div class="orb orb-2"></div>
+<div class="orb orb-3"></div>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-glow"></div>
+    <div class="academy-badge">✦ স্বাগতম ✦</div>
+    <div class="logo-text">RADIUS<span>.</span></div>
+    <div style="font-size: clamp(16px,4vw,22px); font-weight:700; letter-spacing:6px; color:var(--mid); margin-top:4px;">ACADEMY</div>
+    <div class="tagline">— আধুনিক শিক্ষার নতুন দিগন্ত —</div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-icon">★</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- INTRO -->
+  <div class="intro-headline">
+    যেখানে প্রযুক্তি মেলে <span class="highlight">শিক্ষার সাথে</span>,<br>
+    সেখানেই তৈরি হয় আগামীর <span class="highlight">মেধাবী প্রজন্ম</span>
+  </div>
+  <div class="intro-sub">জানুন কেন RADIUS ACADEMY সবার চেয়ে আলাদা</div>
+
+  <!-- FEATURES TITLE -->
+  <div class="features-title">✦ আমাদের বিশেষ বৈশিষ্ট্যসমূহ ✦</div>
+
+  <!-- FEATURES GRID -->
+  <div class="features-grid">
+
+    <div class="feature-card">
+      <div class="card-icon icon-blue">🖥️</div>
+      <div class="card-title"><span class="star">★</span>ডিজিটাল ক্লাস উপস্থাপনা</div>
+      <div class="card-body">
+        প্রতিটি অধ্যায়ের গুরুত্বপূর্ণ বিষয়গুলো PowerPoint Presentation, PDF বা ডিজিটাল নোটের মাধ্যমে প্রজেক্টর, কম্পিউটার ও ট্যাবলেটে পেশাদারভাবে উপস্থাপন করা হয়।
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="card-icon icon-cyan">📊</div>
+      <div class="card-title"><span class="star">★</span>ভিজ্যুয়াল লার্নিং</div>
+      <div class="card-body">
+        পাঠ্য বিষয়কে ছবি, গ্রাফ-চার্ট, Animation ও Simulation-এর মাধ্যমে দেখানো হয়, যাতে জটিল তত্ত্বও সহজে বোধগম্য হয়।
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="card-icon icon-purple">🎬</div>
+      <div class="card-title"><span class="star">★</span>ভিডিও লেকচার সুবিধা</div>
+      <div class="card-body">
+        কঠিন টপিকের ক্লাস ভিডিও আকারে ইন্টারনেটে আপলোড করা হয়। লিংক সরবরাহ করা হয় যাতে শিক্ষার্থী যেকোনো সময়, যতবার ইচ্ছা বুঝে নিতে পারে।
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="card-icon icon-green">✅</div>
+      <div class="card-title"><span class="star">★</span>তাৎক্ষণিক MCQ পরীক্ষা</div>
+      <div class="card-body">
+        প্রতিটি অধ্যায় শেষে Google Form বা ওয়েবসাইটে MCQ পরীক্ষা নেওয়া হয়। পরীক্ষার পরপরই সঠিক উত্তর ও ব্যাখ্যা জানা যায়।
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="card-icon icon-gold">📖</div>
+      <div class="card-title"><span class="star">★</span>ইংরেজির জন্য ডিজিটাল বই</div>
+      <div class="card-body">
+        ইংরেজি বাক্য ভেঙে ভেঙে উচ্চারণ ও অর্থসহ শেখার সুবিধা। QR কোড স্ক্যান করে বাড়িতেও পড়া যায় সহজেই।
+      </div>
+    </div>
+
+    <div class="feature-card">
+      <div class="card-icon icon-pink">📱</div>
+      <div class="card-title"><span class="star">★</span>স্মার্ট লেকচার শিট ও App</div>
+      <div class="card-body">
+        ইংরেজির জন্য রয়েছে স্মার্ট লেকচার শিট এবং RADIUS-এর নিজস্ব অ্যাপ, যা শিক্ষার্থীদের ব্যক্তিগত পাঠচর্চাকে আরও কার্যকর করে তোলে।
+      </div>
+    </div>
+
+    <div class="feature-card wide-card">
+      <div class="card-icon icon-orange">🏫</div>
+      <div class="card-title"><span class="star">★</span>এক ছাদের নিচে সব বিষয়ের শিক্ষক</div>
+      <div class="card-body">
+        একই জায়গায় একাধিক বিষয়ের অভিজ্ঞ শিক্ষক পাওয়া যায়। শিক্ষার্থীদের আর একাধিক প্রাইভেটের জন্য ছোটাছুটি করতে হয় না — এতে সাশ্রয় হয় সময়, শ্রম ও অর্থ।
+      </div>
+    </div>
+
+  </div>
+
+  <!-- HIGHLIGHT BAND -->
+  <div class="highlight-band">
+    <div class="band-icon">🎯</div>
+    <div class="band-text">
+      <h3>আমাদের লক্ষ্য</h3>
+      <p>
+        RADIUS ACADEMY বিশ্বাস করে, সঠিক পদ্ধতিতে পড়ালে প্রতিটি শিক্ষার্থীই পারে। আমরা শুধু পাঠ্যবই পড়াই না — আমরা বোঝাই, অনুপ্রাণিত করি এবং প্রতিটি শিক্ষার্থীর ভেতরের মেধাকে জাগিয়ে তুলি।
+      </p>
+    </div>
+  </div>
+
+  <!-- DIVIDER -->
+  <div class="divider">
+    <div class="divider-line"></div>
+    <div class="divider-icon">✦</div>
+    <div class="divider-line"></div>
+  </div>
+
+  <!-- FOOTER -->
+  <div class="footer">
+    <div class="footer-logo">RADIUS ACADEMY</div>
+    <div class="footer-tagline">আধুনিক শিক্ষা · স্মার্ট পদ্ধতি · উজ্জ্বল ভবিষ্যৎ</div>
+    <div class="footer-dots">
+      <div class="dot"></div>
+      <div class="dot active"></div>
+      <div class="dot"></div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
